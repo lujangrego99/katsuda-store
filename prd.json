@@ -1,0 +1,497 @@
+{
+  "project": "Katsuda Store",
+  "branchName": "ralph/katsuda-ecommerce",
+  "description": "E-commerce completo para Katsuda - Distribuidora de grifería y sanitarios",
+  "database": "postgres://postgres:1bc6552dfa18bd68cd26@38.54.45.192:5433/katsuda?sslmode=disable",
+  "colors": {
+    "primary": "#1B5E20",
+    "secondary": "#2E7D32",
+    "accent": "#4CAF50",
+    "accentOffer": "#FF6B35"
+  },
+  "userStories": [
+    {
+      "id": "E0-S01",
+      "title": "Crear estructura del proyecto monorepo",
+      "description": "Como desarrollador, necesito la estructura base del proyecto para comenzar el desarrollo.",
+      "acceptanceCriteria": [
+        "Crear monorepo con pnpm workspaces",
+        "apps/web: Next.js 14 con App Router, Tailwind, TypeScript",
+        "apps/api: Express + Prisma + TypeScript",
+        "packages/shared: tipos compartidos",
+        "docker-compose.yml para desarrollo local",
+        "pnpm dev funciona para ambos servicios",
+        "Typecheck pasa"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E0-S02",
+      "title": "Configurar conexión a PostgreSQL con Prisma",
+      "description": "Como desarrollador, necesito conectar a la base de datos para persistir información.",
+      "acceptanceCriteria": [
+        "Configurar Prisma en apps/api",
+        "Conectar a postgres://postgres:1bc6552dfa18bd68cd26@38.54.45.192:5433/katsuda",
+        "Crear archivo .env con DATABASE_URL",
+        "Verificar conexión con prisma db pull o simple query",
+        "Typecheck pasa"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E0-S03",
+      "title": "Crear CLAUDE.md del proyecto",
+      "description": "Como desarrollador, necesito documentación del proyecto para referencias futuras.",
+      "acceptanceCriteria": [
+        "Crear .claude/CLAUDE.md con info del proyecto",
+        "Incluir stack, comandos, estructura, colores",
+        "Incluir conexión a BD"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E1-S01",
+      "title": "Schema de productos y categorías en Prisma",
+      "description": "Como desarrollador, necesito el modelo de datos para productos.",
+      "acceptanceCriteria": [
+        "Crear modelos: Category, Brand, Product, ProductImage, ProductAttribute",
+        "Category soporta jerarquía padre/hijo",
+        "Product tiene: sku, slug, precios (normal, transferencia, comparación), stock, dimensiones",
+        "Correr prisma migrate dev",
+        "Typecheck pasa"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E1-S02",
+      "title": "Schema de clientes y pedidos",
+      "description": "Como desarrollador, necesito el modelo de datos para clientes y pedidos.",
+      "acceptanceCriteria": [
+        "Crear modelos: Customer, Address, Cart, CartItem, Order, OrderItem",
+        "Order tiene estados: PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED",
+        "Order soporta guest checkout (sin cuenta)",
+        "Correr prisma migrate dev",
+        "Typecheck pasa"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E1-S03",
+      "title": "Schema admin, contacto y configuración",
+      "description": "Como desarrollador, necesito modelos para administración del sitio.",
+      "acceptanceCriteria": [
+        "Crear modelos: Admin (con roles), Contact, ShippingZone, Settings",
+        "Settings es singleton con config del sitio (teléfono, whatsapp, descuento transferencia)",
+        "ShippingZone permite configurar zonas de envío con precios",
+        "Correr prisma migrate dev",
+        "Typecheck pasa"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E1-S04",
+      "title": "Seed de datos iniciales",
+      "description": "Como desarrollador, necesito datos de prueba para desarrollo.",
+      "acceptanceCriteria": [
+        "Crear script prisma/seed.ts",
+        "Seed: Categorías (Griferías, Sanitarios, Termotanques, Bombas, Hogar, Instalaciones)",
+        "Seed: Marcas (FV, Piazza, Ferrum, Roca, Aqua, DECA)",
+        "Seed: 10-15 productos de ejemplo con imágenes placeholder",
+        "Seed: Admin por defecto (admin@katsuda.com.ar)",
+        "Seed: Settings con datos de Katsuda",
+        "Seed: Zonas de envío (Mendoza, San Juan)",
+        "pnpm db:seed funciona"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E2-S01",
+      "title": "Layout base y navegación del frontend",
+      "description": "Como usuario, necesito navegar el sitio con header y footer consistentes.",
+      "acceptanceCriteria": [
+        "Header: Logo Katsuda, navegación categorías, buscador, carrito, WhatsApp",
+        "Footer: Info sucursales (Mendoza y San Juan), horarios, redes sociales, links útiles",
+        "Colores de Katsuda aplicados (verde #1B5E20, #2E7D32, #4CAF50)",
+        "Responsive mobile-first",
+        "Instalar y configurar shadcn/ui",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E2-S02",
+      "title": "API de productos y categorías",
+      "description": "Como frontend, necesito endpoints para obtener productos.",
+      "acceptanceCriteria": [
+        "GET /api/categories - Lista categorías con conteo de productos",
+        "GET /api/categories/:slug - Categoría con productos",
+        "GET /api/brands - Lista marcas",
+        "GET /api/products - Lista productos paginada con filtros (category, brand, priceMin, priceMax, inStock, freeShipping)",
+        "GET /api/products/:slug - Detalle de producto con imágenes, atributos y relacionados",
+        "GET /api/products/featured - Productos destacados",
+        "Typecheck pasa"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E2-S03",
+      "title": "Home page",
+      "description": "Como usuario, quiero ver la página principal con productos destacados y categorías.",
+      "acceptanceCriteria": [
+        "Hero banner con imagen y CTA",
+        "Sección 'Por qué elegirnos' (Confiabilidad, Efectividad, Trayectoria)",
+        "Grid de categorías con imágenes",
+        "Carousel de productos destacados/ofertas",
+        "Logos de marcas que trabajan",
+        "Formulario de contacto rápido",
+        "Responsive en mobile",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E2-S04",
+      "title": "Listado de productos con filtros",
+      "description": "Como usuario, quiero ver productos por categoría y filtrarlos.",
+      "acceptanceCriteria": [
+        "Ruta /productos y /categoria/[slug]",
+        "Grid de productos (4 cols desktop, 2 mobile)",
+        "Sidebar con filtros: Categoría, Marca, Precio (min-max), En stock, Envío gratis",
+        "Ordenar por: Más vendidos, Precio menor/mayor, Novedades",
+        "Paginación",
+        "Card de producto: imagen, badge OFERTA/ENVÍO GRATIS, nombre, SKU, precios",
+        "URL actualiza con filtros seleccionados",
+        "Empty state si no hay resultados",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E2-S05",
+      "title": "Página de detalle de producto",
+      "description": "Como usuario, quiero ver toda la información de un producto.",
+      "acceptanceCriteria": [
+        "Ruta /productos/[slug]",
+        "Breadcrumb: Inicio > Categoría > Producto",
+        "Galería de imágenes con thumbnails",
+        "Info: Marca, SKU, nombre, precio, precio transferencia (9% desc), cuotas",
+        "Selector de cantidad con validación de stock",
+        "Botón Agregar al carrito",
+        "Calculadora de envío por código postal",
+        "Tabs: Descripción / Especificaciones (atributos)",
+        "Sección productos relacionados",
+        "Meta tags SEO y Open Graph",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E3-S01",
+      "title": "API de carrito",
+      "description": "Como usuario, necesito endpoints para gestionar mi carrito.",
+      "acceptanceCriteria": [
+        "GET /api/cart - Obtener carrito actual (por session o customer)",
+        "POST /api/cart/items - Agregar producto",
+        "PATCH /api/cart/items/:id - Actualizar cantidad",
+        "DELETE /api/cart/items/:id - Eliminar producto",
+        "Validar stock disponible",
+        "Carrito anónimo por sessionId",
+        "Typecheck pasa"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E3-S02",
+      "title": "Carrito de compras UI",
+      "description": "Como usuario, quiero ver y modificar mi carrito de compras.",
+      "acceptanceCriteria": [
+        "Ruta /carrito",
+        "Lista de productos con imagen, nombre, precio, cantidad, subtotal",
+        "Botones +/- para modificar cantidad",
+        "Botón eliminar producto",
+        "Resumen: Subtotal, Envío (pendiente), Total",
+        "Botón 'Continuar comprando' y 'Finalizar compra'",
+        "Mini-carrito en header con contador",
+        "Empty state con sugerencias de productos",
+        "Persistencia en localStorage",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E3-S03",
+      "title": "API de checkout y pedidos",
+      "description": "Como usuario, necesito crear pedidos.",
+      "acceptanceCriteria": [
+        "POST /api/checkout - Crear pedido desde carrito",
+        "Validar stock antes de crear",
+        "Reducir stock al confirmar",
+        "Generar número de pedido único",
+        "GET /api/orders/:id - Ver pedido por número",
+        "POST /api/shipping/calculate - Calcular envío por CP",
+        "Typecheck pasa"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E3-S04",
+      "title": "Checkout UI",
+      "description": "Como usuario, quiero completar mi compra con mis datos.",
+      "acceptanceCriteria": [
+        "Ruta /checkout",
+        "Paso 1: Datos de contacto (email, nombre, teléfono)",
+        "Paso 2: Dirección de envío (calle, número, ciudad, provincia, CP)",
+        "Paso 3: Método de envío (retiro local gratuito / envío a domicilio)",
+        "Paso 4: Método de pago (transferencia bancaria / efectivo en local)",
+        "Paso 5: Confirmación con resumen completo",
+        "Resumen del pedido siempre visible",
+        "Validación de formularios",
+        "Mostrar número de pedido al finalizar",
+        "Vaciar carrito al confirmar",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E4-S01",
+      "title": "API de autenticación admin",
+      "description": "Como admin, necesito poder logearme al panel.",
+      "acceptanceCriteria": [
+        "POST /api/admin/login - Login con JWT",
+        "Middleware de autenticación para rutas protegidas",
+        "GET /api/admin/me - Datos del admin actual",
+        "Typecheck pasa"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E4-S02",
+      "title": "Layout y dashboard admin",
+      "description": "Como admin, necesito un panel de administración.",
+      "acceptanceCriteria": [
+        "Ruta /admin con layout propio (sidebar)",
+        "Página de login /admin/login",
+        "Dashboard con: Pedidos pendientes, Ventas del día, Productos bajo stock, Mensajes sin leer",
+        "Navegación: Dashboard, Productos, Categorías, Marcas, Pedidos, Mensajes, Configuración",
+        "Protección de rutas (redirect a login si no autenticado)",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E4-S03",
+      "title": "CRUD de productos en admin",
+      "description": "Como admin, necesito gestionar productos.",
+      "acceptanceCriteria": [
+        "GET /api/admin/products - Lista paginada con búsqueda",
+        "POST /api/admin/products - Crear producto",
+        "PATCH /api/admin/products/:id - Actualizar producto",
+        "DELETE /api/admin/products/:id - Eliminar producto",
+        "UI: Tabla con búsqueda, crear, editar, activar/desactivar",
+        "Formulario completo: nombre, SKU, precios, categoría, marca, descripción, imágenes, atributos",
+        "Upload de imágenes (puede ser URL por ahora)",
+        "Generación automática de slug",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E4-S04",
+      "title": "Gestión de categorías y marcas en admin",
+      "description": "Como admin, necesito gestionar categorías y marcas.",
+      "acceptanceCriteria": [
+        "CRUD completo de categorías con UI",
+        "Categorías soportan padre/hijo",
+        "CRUD completo de marcas con UI",
+        "Ordenamiento de categorías",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E4-S05",
+      "title": "Gestión de pedidos en admin",
+      "description": "Como admin, necesito ver y gestionar pedidos.",
+      "acceptanceCriteria": [
+        "GET /api/admin/orders - Lista paginada con filtros",
+        "PATCH /api/admin/orders/:id - Actualizar estado",
+        "UI: Tabla con filtro por estado y fecha",
+        "Ver detalle del pedido con datos del cliente",
+        "Cambiar estado: Pendiente → Confirmado → Procesando → Enviado → Entregado",
+        "Agregar notas internas",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E5-S01",
+      "title": "Buscador de productos",
+      "description": "Como usuario, quiero buscar productos rápidamente.",
+      "acceptanceCriteria": [
+        "GET /api/products/search?q=termo - Búsqueda por nombre, SKU, marca",
+        "Buscador en header expandible",
+        "Autocomplete mientras escribe (debounce 300ms)",
+        "Mostrar hasta 5 sugerencias con imagen y precio",
+        "Página /buscar?q=termo con resultados completos y filtros",
+        "Resaltado del término en resultados",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E5-S02",
+      "title": "Calculadora de envío",
+      "description": "Como usuario, quiero saber el costo de envío antes de comprar.",
+      "acceptanceCriteria": [
+        "GET /api/shipping/zones - Zonas configuradas",
+        "POST /api/shipping/calculate - Calcular por CP y productos",
+        "Input de CP en página de producto y carrito",
+        "Mostrar: Retiro gratis en local, Envío a domicilio con precio",
+        "Mensaje 'Envío gratis' si supera monto mínimo",
+        "Admin puede configurar zonas y precios",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E5-S03",
+      "title": "Botón flotante WhatsApp",
+      "description": "Como usuario, quiero contactar por WhatsApp fácilmente.",
+      "acceptanceCriteria": [
+        "Botón flotante verde en esquina inferior derecha",
+        "Click abre WhatsApp con mensaje predefinido",
+        "En producto: 'Hola! Me interesa [nombre] SKU [sku]'",
+        "En carrito: 'Hola! Quiero consultar por mi carrito'",
+        "En home: 'Hola! Quiero hacer una consulta'",
+        "Número configurable desde admin Settings",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E5-S04",
+      "title": "Página de contacto",
+      "description": "Como usuario, quiero enviar consultas por formulario.",
+      "acceptanceCriteria": [
+        "Ruta /contacto",
+        "Formulario: nombre, email, teléfono, provincia (Mendoza/San Juan), asunto, mensaje",
+        "Validación y captcha básico",
+        "POST /api/contact - Guardar mensaje",
+        "Info de sucursales con mapa (opcional)",
+        "Horarios de atención",
+        "Admin puede ver mensajes en /admin/mensajes",
+        "Verificar en browser con dev-browser skill"
+      ],
+      "priority": 25,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E6-S01",
+      "title": "SEO meta tags y Open Graph",
+      "description": "Como negocio, necesito que el sitio aparezca bien en Google y redes.",
+      "acceptanceCriteria": [
+        "Cada página tiene title y description únicos",
+        "Productos tienen meta tags dinámicos con nombre y precio",
+        "Open Graph tags para compartir en redes",
+        "Schema.org Product en páginas de producto",
+        "Breadcrumb schema",
+        "Verificar con herramienta de validación"
+      ],
+      "priority": 26,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E6-S02",
+      "title": "Sitemap y robots.txt",
+      "description": "Como negocio, necesito que Google indexe el sitio.",
+      "acceptanceCriteria": [
+        "/sitemap.xml generado dinámicamente con productos y categorías",
+        "/robots.txt permitiendo indexación",
+        "Actualización automática del sitemap"
+      ],
+      "priority": 27,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E7-S01",
+      "title": "Configurar deploy en Easypanel",
+      "description": "Como equipo, necesito el sitio disponible públicamente.",
+      "acceptanceCriteria": [
+        "Crear Dockerfile para apps/web",
+        "Crear Dockerfile para apps/api",
+        "docker-compose.yml para producción",
+        "Variables de entorno para producción",
+        "Health check endpoints",
+        "Documentar proceso de deploy en README"
+      ],
+      "priority": 28,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "E7-S02",
+      "title": "Tests básicos",
+      "description": "Como desarrollador, necesito tests para evitar regresiones.",
+      "acceptanceCriteria": [
+        "Tests unitarios para cálculo de precios (descuento transferencia, cuotas)",
+        "Tests de API para endpoints críticos (productos, carrito, checkout)",
+        "Test E2E básico: navegar home → producto → agregar carrito",
+        "pnpm test funciona"
+      ],
+      "priority": 29,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
