@@ -436,3 +436,76 @@ Started: 2026-01-21
 
 **Commit:** 43a18ee
 ---
+
+## 2026-01-22 - E4-S01: API de autenticación admin
+
+**Qué se implementó:**
+- POST /api/admin/login - Login con email/password que retorna JWT
+- GET /api/admin/me - Obtener datos del admin autenticado
+- Middleware authMiddleware para proteger rutas que requieren autenticación
+- Helper generateToken para generar tokens JWT con payload tipado
+- Helper requireRole para verificar roles mínimos (SUPER, ADMIN, STAFF)
+- Extensión de Express.Request para incluir datos del admin autenticado
+- Actualización de lastLogin al hacer login exitoso
+- Validación de usuario activo en cada request autenticado
+
+**Archivos creados:**
+- apps/api/src/middleware/auth.ts (middleware y helpers de autenticación)
+- apps/api/src/routes/admin/auth.ts (endpoints de login y me)
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integración del adminAuthRouter)
+
+**Aprendizajes para futuras iteraciones:**
+- Usar declare global para extender Express.Request con tipos personalizados
+- El middleware authMiddleware debe extraer token de Authorization header (Bearer token)
+- Las rutas admin van en carpeta /routes/admin/ para organización
+- JWT_SECRET debe venir de variable de entorno en producción
+- bcrypt.compare para verificar contraseñas hasheadas
+
+**Commit:** ebb3450
+---
+
+## 2026-01-22 - E4-S02: Layout y dashboard admin
+
+**Qué se implementó:**
+- Página /admin/login con formulario de autenticación (email/password)
+- Layout del admin con sidebar de navegación (desktop fijo, mobile Sheet)
+- Navegación: Dashboard, Productos, Categorías, Marcas, Pedidos, Mensajes, Configuración
+- Endpoint GET /api/admin/dashboard con métricas:
+  - Pedidos pendientes (count)
+  - Ventas del día (suma de pedidos no cancelados)
+  - Productos con bajo stock (stock <= 5)
+  - Mensajes sin leer (count)
+  - Lista de pedidos recientes (últimos 5)
+  - Lista de productos con bajo stock (top 5)
+- Dashboard UI con cards de métricas y listas interactivas
+- AdminAuthContext para manejo de autenticación con:
+  - Persistencia de token en localStorage
+  - Verificación de token con /api/admin/me
+  - Logout y limpieza de sesión
+  - Redirección automática a /admin/login si no autenticado
+- Header del admin con menú mobile, título de página y datos del usuario
+- Protección de rutas admin mediante context (redirect si no hay token)
+
+**Archivos creados:**
+- apps/api/src/routes/admin/dashboard.ts
+- apps/web/src/app/admin/layout.tsx
+- apps/web/src/app/admin/page.tsx (dashboard)
+- apps/web/src/app/admin/login/page.tsx
+- apps/web/src/components/admin/AdminSidebar.tsx
+- apps/web/src/components/admin/AdminHeader.tsx
+- apps/web/src/context/AdminAuthContext.tsx
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integración adminDashboardRouter)
+
+**Aprendizajes para futuras iteraciones:**
+- El layout de admin usa pathname para detectar si es /admin/login y no mostrar sidebar/header
+- AdminAuthContext usa useEffect para verificar token al montar, con fallback a cache en localStorage
+- Las métricas del dashboard se calculan server-side con Prisma aggregations
+- El nombre del cliente se unifica de customer (registrado) o guestName/guestEmail (guest)
+- Sheet de Radix se reutiliza para menú mobile del admin
+
+**Commit:** 5261913
+---

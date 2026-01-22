@@ -10,6 +10,7 @@ import checkoutRouter from './routes/checkout';
 import ordersRouter from './routes/orders';
 import shippingRouter from './routes/shipping';
 import adminAuthRouter from './routes/admin/auth';
+import adminDashboardRouter from './routes/admin/dashboard';
 
 const app: Express = express();
 const prisma = new PrismaClient();
@@ -39,6 +40,7 @@ app.use('/api/checkout', checkoutRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/shipping', shippingRouter);
 app.use('/api/admin', adminAuthRouter);
+app.use('/api/admin/dashboard', adminDashboardRouter);
 
 // API info
 app.get('/api', (_req: Request, res: Response) => {
