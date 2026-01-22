@@ -741,3 +741,38 @@ Started: 2026-01-21
 
 **Commit:** f42f8fc
 ---
+
+## 2026-01-22 - E5-S03: Boton flotante WhatsApp
+
+**Que se implemento:**
+- Boton flotante verde en esquina inferior derecha con icono de WhatsApp
+- Tooltip "Chatea con nosotros" al hacer hover
+- Animacion de escala al hacer hover
+- Mensajes contextuales segun la pagina actual:
+  - En producto: "Hola! Me interesa [nombre] SKU [sku]"
+  - En carrito: "Hola! Quiero consultar por mi carrito"
+  - En checkout: "Hola! Tengo una consulta sobre mi pedido"
+  - En home/otras: "Hola! Quiero hacer una consulta"
+- API endpoint GET /api/settings para obtener configuracion publica
+- WhatsAppContext para compartir info del producto actual entre componentes
+- Numero WhatsApp configurable desde Settings (ya existia en DB)
+- Boton oculto en paginas de admin
+
+**Archivos creados:**
+- apps/api/src/routes/settings.ts (endpoint publico de settings)
+- apps/web/src/components/WhatsAppButton.tsx (componente del boton)
+- apps/web/src/context/WhatsAppContext.tsx (contexto para info de producto)
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integracion settingsRouter)
+- apps/web/src/app/layout.tsx (integracion WhatsAppProvider y WhatsAppButton)
+- apps/web/src/app/productos/[slug]/page.tsx (set productInfo en contexto)
+
+**Aprendizajes para futuras iteraciones:**
+- Usar Context para compartir estado entre componentes que no estan en jerarquia directa
+- El cleanup function en useEffect es importante para limpiar estado al salir de una pagina
+- Los botones flotantes deben tener z-index alto (z-50) para aparecer sobre todo el contenido
+- Ocultar elementos en ciertas rutas con pathname?.startsWith('/admin')
+
+**Commit:** 0ce9e68
+---
