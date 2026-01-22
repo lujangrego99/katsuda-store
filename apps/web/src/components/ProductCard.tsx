@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface Product {
@@ -19,6 +20,7 @@ interface Product {
 
 interface ProductCardProps {
   product: Product;
+  searchQuery?: string;
 }
 
 function formatPrice(price: number): string {
@@ -30,7 +32,25 @@ function formatPrice(price: number): string {
   }).format(price);
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+function highlightMatch(text: string, query?: string): React.ReactNode {
+  if (!query || query.length < 2) return text;
+
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escapedQuery})`, 'gi');
+  const parts = text.split(regex);
+
+  return parts.map((part, i) =>
+    regex.test(part) ? (
+      <mark key={i} className="bg-yellow-200 text-inherit">
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
+}
+
+export function ProductCard({ product, searchQuery }: ProductCardProps) {
   const hasDiscount = product.comparePrice && product.comparePrice > product.price;
 
   return (
@@ -74,13 +94,15 @@ export function ProductCard({ product }: ProductCardProps) {
         <CardContent className="p-4">
           {product.brand && (
             <p className="text-xs text-katsuda-600 font-medium mb-1">
-              {product.brand.name}
+              {highlightMatch(product.brand.name, searchQuery)}
             </p>
           )}
           <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1 group-hover:text-katsuda-700 min-h-[2.5rem]">
-            {product.name}
+            {highlightMatch(product.name, searchQuery)}
           </h3>
-          <p className="text-xs text-gray-500 mb-2">SKU: {product.sku}</p>
+          <p className="text-xs text-gray-500 mb-2">
+            SKU: {highlightMatch(product.sku, searchQuery)}
+          </p>
           <div className="space-y-1">
             {hasDiscount && (
               <p className="text-sm text-gray-400 line-through">

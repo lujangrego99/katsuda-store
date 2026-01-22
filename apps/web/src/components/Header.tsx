@@ -1,13 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   Menu,
   Search,
   ShoppingCart,
   Phone,
   X,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +23,8 @@ import {
 } from '@/components/ui/sheet';
 import { useCart } from '@/context/CartContext';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 const categories = [
   { name: 'Griferías', href: '/categoria/griferias' },
   { name: 'Sanitarios', href: '/categoria/sanitarios' },
@@ -29,19 +34,201 @@ const categories = [
   { name: 'Instalaciones', href: '/categoria/instalaciones' },
 ];
 
+interface SearchResult {
+  id: string;
+  sku: string;
+  name: string;
+  slug: string;
+  price: number;
+  transferPrice: number | null;
+  stock: number;
+  brand: { id: string; name: string; slug: string } | null;
+  category: { id: string; name: string; slug: string } | null;
+  image: string | null;
+}
+
+function formatPrice(price: number): string {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price);
+}
+
+function highlightMatch(text: string, query: string): React.ReactNode {
+  if (!query || query.length < 2) return text;
+
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+
+  return parts.map((part, i) =>
+    regex.test(part) ? (
+      <mark key={i} className="bg-yellow-200 text-inherit">
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
+}
+
 export function Header() {
+  const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
   const { cart } = useCart();
 
   const itemCount = cart?.itemCount || 0;
 
+  // Debounced search
+  useEffect(() => {
+    const trimmedQuery = searchQuery.trim();
+
+    if (trimmedQuery.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await fetch(
+          `${API_URL}/api/products/search?q=${encodeURIComponent(trimmedQuery)}&limit=5`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setSuggestions(data.data || []);
+          setShowSuggestions(true);
+        }
+      } catch (error) {
+        console.error('Error searching:', error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node) &&
+        mobileSearchRef.current &&
+        !mobileSearchRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/buscar?q=${encodeURIComponent(searchQuery)}`;
+      setShowSuggestions(false);
+      router.push(`/buscar?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
+
+  const handleSuggestionClick = (slug: string) => {
+    setShowSuggestions(false);
+    setSearchQuery('');
+    setSearchOpen(false);
+    router.push(`/productos/${slug}`);
+  };
+
+  const handleViewAllResults = () => {
+    if (searchQuery.trim()) {
+      setShowSuggestions(false);
+      router.push(`/buscar?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const SuggestionsDropdown = () => (
+    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
+      {isSearching ? (
+        <div className="p-4 text-center text-gray-500">
+          <Loader2 className="h-5 w-5 animate-spin inline mr-2" />
+          Buscando...
+        </div>
+      ) : suggestions.length > 0 ? (
+        <>
+          <ul className="divide-y divide-gray-100">
+            {suggestions.map((product) => (
+              <li key={product.id}>
+                <button
+                  type="button"
+                  onClick={() => handleSuggestionClick(product.slug)}
+                  className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left"
+                >
+                  <div className="w-12 h-12 relative flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                    {product.image ? (
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                        sizes="48px"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <ShoppingCart className="h-5 w-5" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {highlightMatch(product.name, searchQuery)}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {product.brand?.name && (
+                        <span className="font-medium">{highlightMatch(product.brand.name, searchQuery)}</span>
+                      )}
+                      {product.brand?.name && ' · '}
+                      SKU: {highlightMatch(product.sku, searchQuery)}
+                    </p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-sm font-bold text-katsuda-900">
+                      {formatPrice(Number(product.price))}
+                    </p>
+                    {product.transferPrice && (
+                      <p className="text-xs text-green-600">
+                        Trans: {formatPrice(Number(product.transferPrice))}
+                      </p>
+                    )}
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            onClick={handleViewAllResults}
+            className="w-full p-3 text-center text-sm font-medium text-katsuda-700 hover:bg-katsuda-50 border-t transition-colors"
+          >
+            Ver todos los resultados
+          </button>
+        </>
+      ) : searchQuery.trim().length >= 2 ? (
+        <div className="p-4 text-center text-gray-500">
+          No se encontraron productos
+        </div>
+      ) : null}
+    </div>
+  );
 
   return (
     <header className="sticky top-0 z-50">
@@ -139,29 +326,36 @@ export function Header() {
             {/* Actions */}
             <div className="flex items-center gap-2">
               {/* Search - Desktop */}
-              <form
-                onSubmit={handleSearch}
-                className="hidden md:flex items-center"
-              >
-                <div className="relative">
-                  <Input
-                    type="search"
-                    placeholder="Buscar productos..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-64 pr-10"
-                  />
-                  <Button
-                    type="submit"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-0"
-                  >
-                    <Search className="h-4 w-4" />
-                    <span className="sr-only">Buscar</span>
-                  </Button>
-                </div>
-              </form>
+              <div ref={searchRef} className="hidden md:block relative">
+                <form onSubmit={handleSearch} className="flex items-center">
+                  <div className="relative">
+                    <Input
+                      type="search"
+                      placeholder="Buscar productos..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onFocus={() => {
+                        if (suggestions.length > 0) setShowSuggestions(true);
+                      }}
+                      className="w-64 pr-10"
+                    />
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0"
+                    >
+                      {isSearching ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Search className="h-4 w-4" />
+                      )}
+                      <span className="sr-only">Buscar</span>
+                    </Button>
+                  </div>
+                </form>
+                {showSuggestions && <SuggestionsDropdown />}
+              </div>
 
               {/* Search - Mobile toggle */}
               <Button
@@ -195,27 +389,37 @@ export function Header() {
 
           {/* Mobile search bar */}
           {searchOpen && (
-            <form onSubmit={handleSearch} className="mt-4 md:hidden">
-              <div className="relative">
-                <Input
-                  type="search"
-                  placeholder="Buscar productos..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pr-10"
-                  autoFocus
-                />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0"
-                >
-                  <Search className="h-4 w-4" />
-                  <span className="sr-only">Buscar</span>
-                </Button>
-              </div>
-            </form>
+            <div ref={mobileSearchRef} className="mt-4 md:hidden relative">
+              <form onSubmit={handleSearch}>
+                <div className="relative">
+                  <Input
+                    type="search"
+                    placeholder="Buscar productos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => {
+                      if (suggestions.length > 0) setShowSuggestions(true);
+                    }}
+                    className="w-full pr-10"
+                    autoFocus
+                  />
+                  <Button
+                    type="submit"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0"
+                  >
+                    {isSearching ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Search className="h-4 w-4" />
+                    )}
+                    <span className="sr-only">Buscar</span>
+                  </Button>
+                </div>
+              </form>
+              {showSuggestions && <SuggestionsDropdown />}
+            </div>
           )}
         </div>
       </div>

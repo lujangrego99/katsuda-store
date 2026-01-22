@@ -38,6 +38,7 @@ interface ProductFiltersProps {
   inStock?: boolean;
   freeShipping?: boolean;
   onMobileClose?: () => void;
+  basePath?: string;
 }
 
 export function ProductFilters({
@@ -50,6 +51,7 @@ export function ProductFilters({
   inStock,
   freeShipping,
   onMobileClose,
+  basePath = '/productos',
 }: ProductFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -67,14 +69,20 @@ export function ProductFilters({
       // Reset to page 1 when filters change
       params.delete('page');
 
-      router.push(`/productos?${params.toString()}`);
+      router.push(`${basePath}?${params.toString()}`);
     },
-    [router, searchParams]
+    [router, searchParams, basePath]
   );
 
   const clearAllFilters = useCallback(() => {
-    router.push('/productos');
-  }, [router]);
+    // For search page, keep the search query when clearing filters
+    if (basePath === '/buscar') {
+      const q = searchParams.get('q');
+      router.push(q ? `${basePath}?q=${encodeURIComponent(q)}` : basePath);
+    } else {
+      router.push(basePath);
+    }
+  }, [router, basePath, searchParams]);
 
   const hasActiveFilters = activeCategory || activeBrand || priceMin || priceMax || inStock || freeShipping;
 
@@ -226,7 +234,7 @@ export function ProductFilters({
                     params.delete('priceMin');
                     params.set('priceMax', '50000');
                     params.delete('page');
-                    router.push(`/productos?${params.toString()}`);
+                    router.push(`${basePath}?${params.toString()}`);
                   }}
                   className="text-xs"
                 >
@@ -240,7 +248,7 @@ export function ProductFilters({
                     params.set('priceMin', '50000');
                     params.set('priceMax', '150000');
                     params.delete('page');
-                    router.push(`/productos?${params.toString()}`);
+                    router.push(`${basePath}?${params.toString()}`);
                   }}
                   className="text-xs"
                 >
@@ -254,7 +262,7 @@ export function ProductFilters({
                     params.set('priceMin', '150000');
                     params.delete('priceMax');
                     params.delete('page');
-                    router.push(`/productos?${params.toString()}`);
+                    router.push(`${basePath}?${params.toString()}`);
                   }}
                   className="text-xs"
                 >

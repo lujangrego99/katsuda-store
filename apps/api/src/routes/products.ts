@@ -5,6 +5,61 @@ import { PrismaClient, Prisma } from '@prisma/client';
 const router: RouterType = Router();
 const prisma = new PrismaClient();
 
+// GET /api/products/search - Búsqueda de productos para autocomplete
+router.get('/search', async (req: Request, res: Response) => {
+  try {
+    const q = (req.query.q as string)?.trim();
+    const limit = Math.min(parseInt(req.query.limit as string) || 5, 10);
+
+    if (!q || q.length < 2) {
+      return res.json({ data: [], query: q || '' });
+    }
+
+    // Buscar productos por nombre, SKU o marca
+    const products = await prisma.product.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { name: { contains: q, mode: 'insensitive' } },
+          { sku: { contains: q, mode: 'insensitive' } },
+          { brand: { name: { contains: q, mode: 'insensitive' } } },
+        ],
+      },
+      include: {
+        brand: { select: { id: true, name: true, slug: true } },
+        category: { select: { id: true, name: true, slug: true } },
+        images: {
+          where: { isPrimary: true },
+          take: 1,
+        },
+      },
+      orderBy: [
+        // Priorizar coincidencias exactas de SKU
+        { sku: 'asc' },
+      ],
+      take: limit,
+    });
+
+    const result = products.map(product => ({
+      id: product.id,
+      sku: product.sku,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      transferPrice: product.transferPrice,
+      stock: product.stock,
+      brand: product.brand,
+      category: product.category,
+      image: product.images[0]?.url || null,
+    }));
+
+    res.json({ data: result, query: q });
+  } catch (error) {
+    console.error('Error searching products:', error);
+    res.status(500).json({ error: 'Error al buscar productos' });
+  }
+});
+
 // GET /api/products/featured - Productos destacados (debe ir antes de /:slug)
 router.get('/featured', async (req: Request, res: Response) => {
   try {
