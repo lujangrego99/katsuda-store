@@ -776,3 +776,52 @@ Started: 2026-01-21
 
 **Commit:** 0ce9e68
 ---
+
+## 2026-01-22 - E5-S04: Pagina de contacto
+
+**Que se implemento:**
+- POST /api/contact - Endpoint para guardar mensajes de contacto
+  - Validacion de campos requeridos (nombre, email, mensaje)
+  - Validacion de formato de email
+  - Captcha basico validado
+- Pagina /contacto con formulario completo:
+  - Campos: nombre, email, telefono, provincia, asunto, mensaje
+  - Validacion de formulario client-side con mensajes de error
+  - Captcha basico con operacion matematica (suma)
+  - Estado de exito con mensaje de confirmacion
+- Info de sucursales:
+  - Mendoza: direccion, telefono
+  - San Juan: direccion, telefono
+  - Datos dinamicos desde Settings API
+- Horarios de atencion (L-V y Sabados)
+- CTA de WhatsApp con mensaje contextual
+- API admin para gestionar mensajes:
+  - GET /api/admin/messages - Lista paginada con filtros
+  - GET /api/admin/messages/:id - Detalle
+  - PATCH /api/admin/messages/:id/read - Marcar como leido
+  - PATCH /api/admin/messages/:id/unread - Marcar como no leido
+  - PATCH /api/admin/messages/read-all - Marcar todos como leidos
+  - DELETE /api/admin/messages/:id - Eliminar
+- Pagina admin /admin/mensajes:
+  - Tabla de mensajes con filtros y busqueda
+  - Cards de estadisticas (total, sin leer, leidos)
+  - Modal de detalle con info del remitente
+  - Acciones: marcar leido/no leido, eliminar, responder por email
+
+**Archivos creados:**
+- apps/api/src/routes/contact.ts
+- apps/api/src/routes/admin/messages.ts
+- apps/web/src/app/contacto/page.tsx
+- apps/web/src/app/admin/mensajes/page.tsx
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integracion contactRouter y adminMessagesRouter)
+
+**Aprendizajes para futuras iteraciones:**
+- Captcha basico con operaciones matematicas es suficiente para proteccion inicial
+- generateCaptcha retorna un objeto {question, answer} que se regenera al cambiar
+- El endpoint read-all debe ir ANTES del /:id para que Express no lo interprete como parametro
+- formatRelativeDate ayuda a mostrar tiempos legibles ("Hace 5 min", "Hace 2 dias")
+
+**Commit:** 7d6e17c
+---
