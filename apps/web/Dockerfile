@@ -18,15 +18,22 @@ RUN pnpm install --ignore-workspace
 FROM base AS builder
 WORKDIR /app
 
+# These env vars are passed by Easypanel during build
+# Configure them in Easypanel's Environment Variables section
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Ensure public folder exists
 RUN mkdir -p public
 
-# Build (uses .env.production for NEXT_PUBLIC_* vars)
+# Build
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm build
+RUN echo "Building with API_URL: $NEXT_PUBLIC_API_URL" && pnpm build
 
 FROM base AS runner
 WORKDIR /app
