@@ -362,3 +362,77 @@ Started: 2026-01-21
 
 **Commit:** 732938b
 ---
+
+## 2026-01-22 - E3-S03: API de checkout y pedidos
+
+**Qué se implementó:**
+- POST /api/checkout - Crear pedido desde carrito completo:
+  - Validación de datos de contacto y dirección (si es envío a domicilio)
+  - Validación de stock de todos los productos antes de confirmar
+  - Cálculo de subtotal con soporte para precio transferencia
+  - Cálculo de envío según zona y monto mínimo para envío gratis
+  - Generación de número de pedido único formato KAT-YYMMDD-XXXX
+  - Transacción atómica: crear pedido, reducir stock, vaciar carrito
+- GET /api/orders/:orderNumber - Ver detalle de pedido con productos e imágenes
+- POST /api/shipping/calculate - Calcular envío por código postal:
+  - Detecta provincia/zona por rangos de códigos postales
+  - Retorna opciones de envío a domicilio y retiro en sucursal
+  - Calcula envío gratis si supera monto mínimo configurado
+- GET /api/shipping/zones - Listar zonas de envío activas
+
+**Archivos creados:**
+- apps/api/src/routes/checkout.ts
+- apps/api/src/routes/orders.ts
+- apps/api/src/routes/shipping.ts
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integración de checkoutRouter, ordersRouter, shippingRouter)
+
+**Aprendizajes para futuras iteraciones:**
+- Usar Prisma.$transaction para operaciones atómicas que deben ejecutarse todas o ninguna
+- Prisma.Decimal para operaciones matemáticas con precios (evita errores de punto flotante)
+- El número de pedido se genera buscando el último del día y sumando 1 al secuencial
+- Las rutas de shipping usan mapeo de rangos de códigos postales a zonas
+
+**Commit:** 7be1eaf
+---
+
+## 2026-01-22 - E3-S04: Checkout UI
+
+**Qué se implementó:**
+- Página /checkout con flujo completo de 5 pasos
+- Stepper visual para navegación entre pasos
+- Paso 1: Formulario de datos de contacto (email, nombre, apellido, teléfono)
+- Paso 2: Formulario de dirección de envío (calle, número, piso, depto, ciudad, provincia, CP)
+  - Para retiro en sucursal: solo muestra selección de provincia y sucursal
+- Paso 3: Selector de método de envío con cálculo automático vía API
+  - Retiro en sucursal (gratis)
+  - Envío a domicilio con precio calculado y opción de envío gratis
+- Paso 4: Selector de método de pago
+  - Transferencia bancaria (9% OFF) con datos bancarios
+  - Efectivo en local
+- Paso 5: Confirmación con resumen completo de datos, productos y totales
+- Resumen del pedido siempre visible en sidebar derecho
+- Validación de formularios con mensajes de error
+- Página de éxito con número de pedido y datos de transferencia
+- Vaciar carrito automáticamente al confirmar pedido
+- Componentes UI nuevos: Label, RadioGroup (shadcn/ui)
+- Extensión de CartContext con clearCart y getSessionId
+
+**Archivos creados:**
+- apps/web/src/app/checkout/page.tsx (página completa de checkout)
+- apps/web/src/components/ui/label.tsx (componente Label shadcn/ui)
+- apps/web/src/components/ui/radio-group.tsx (componente RadioGroup shadcn/ui)
+
+**Archivos modificados:**
+- apps/web/src/context/CartContext.tsx (agregado clearCart y getSessionId)
+- apps/web/package.json (nuevas dependencias @radix-ui/react-label, @radix-ui/react-radio-group)
+
+**Aprendizajes para futuras iteraciones:**
+- Para evitar warnings de ESLint con dependencias de useEffect que no deben triggerar re-runs, usar useRef para almacenar callbacks
+- El stepper visual se puede hacer con CSS flexbox y líneas conectoras absolutas
+- Los pasos del checkout comparten estado via el formulario padre y solo manejan su parte
+- Calcular envío dinámicamente cuando el usuario ingresa el código postal usando la API existente
+
+**Commit:** 43a18ee
+---

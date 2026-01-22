@@ -39,6 +39,8 @@ interface CartContextType {
   updateQuantity: (itemId: string, quantity: number) => Promise<boolean>;
   removeFromCart: (itemId: string) => Promise<boolean>;
   refreshCart: () => Promise<void>;
+  clearCart: () => void;
+  getSessionId: () => string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -193,6 +195,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     await fetchCart();
   };
 
+  const clearCart = () => {
+    setCart(null);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -203,6 +209,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         updateQuantity,
         removeFromCart,
         refreshCart,
+        clearCart,
+        getSessionId,
       }}
     >
       {children}
