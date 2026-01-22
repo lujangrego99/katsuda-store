@@ -76,17 +76,26 @@ export default function Home() {
   const [sent, setSent] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${API_URL}/api/categories`).then((r) => r.json()),
-      fetch(`${API_URL}/api/brands`).then((r) => r.json()),
-      fetch(`${API_URL}/api/products/featured?limit=8`).then((r) => r.json()),
-    ])
-      .then(([catData, brandData, prodData]) => {
+    const fetchData = async () => {
+      try {
+        const [catRes, brandRes, prodRes] = await Promise.all([
+          fetch(`${API_URL}/api/categories`),
+          fetch(`${API_URL}/api/brands`),
+          fetch(`${API_URL}/api/products/featured?limit=8`),
+        ]);
+
+        const catData = catRes.ok ? await catRes.json() : { data: [] };
+        const brandData = brandRes.ok ? await brandRes.json() : { data: [] };
+        const prodData = prodRes.ok ? await prodRes.json() : { data: [] };
+
         setCategories(catData.data || []);
         setBrands(brandData.data || []);
         setFeaturedProducts(prodData.data || []);
-      })
-      .catch(console.error);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
   }, []);
 
   const visibleProducts = 4;
@@ -265,7 +274,7 @@ export default function Home() {
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-katsuda-100">
                         <span className="text-4xl text-katsuda-300">
-                          {category.name[0]}
+                          {category.name?.[0] || '?'}
                         </span>
                       </div>
                     )}
@@ -332,7 +341,7 @@ export default function Home() {
                 >
                   <Card className="h-full border hover:shadow-lg transition-shadow group">
                     <div className="aspect-square relative bg-gray-50 overflow-hidden">
-                      {product.images[0] ? (
+                      {product.images?.[0] ? (
                         <Image
                           src={product.images[0].url}
                           alt={product.images[0].alt || product.name}
