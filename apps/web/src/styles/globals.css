@@ -2,22 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --katsuda-green-900: #1B5E20;
-  --katsuda-green-800: #2E7D32;
-  --katsuda-green-700: #388E3C;
-  --katsuda-green-600: #43A047;
-  --katsuda-green-500: #4CAF50;
-  --katsuda-green-400: #66BB6A;
-  --katsuda-green-300: #81C784;
-  --katsuda-green-200: #A5D6A7;
-  --katsuda-green-100: #C8E6C9;
-  --katsuda-green-50: #E8F5E9;
-  --accent-orange: #FF6B35;
+@layer base {
+  :root {
+    /* Katsuda brand colors */
+    --katsuda-green-900: 122 76% 23%;
+    --katsuda-green-800: 125 58% 33%;
+    --katsuda-green-700: 123 49% 39%;
+    --katsuda-green-600: 123 45% 46%;
+    --katsuda-green-500: 122 39% 49%;
+    --katsuda-green-400: 123 38% 57%;
+    --katsuda-green-300: 123 38% 64%;
+    --katsuda-green-200: 122 38% 74%;
+    --katsuda-green-100: 122 40% 85%;
+    --katsuda-green-50: 122 39% 95%;
+    --accent-orange: 18 100% 60%;
+
+    /* shadcn/ui base - using Katsuda green as primary */
+    --background: 0 0% 100%;
+    --foreground: 122 76% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 122 76% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 122 76% 12%;
+    --primary: 122 76% 23%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 122 39% 95%;
+    --secondary-foreground: 122 76% 23%;
+    --muted: 122 39% 95%;
+    --muted-foreground: 122 20% 40%;
+    --accent: 122 39% 95%;
+    --accent-foreground: 122 76% 23%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 122 20% 85%;
+    --input: 122 20% 85%;
+    --ring: 122 76% 23%;
+    --radius: 0.5rem;
+  }
 }
 
-body {
-  font-family: 'Inter', system-ui, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
 }
 
 @layer utilities {
