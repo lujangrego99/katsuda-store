@@ -2,6 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install OpenSSL and other dependencies needed by Prisma
+RUN apk add --no-cache openssl openssl-dev libc6-compat
+
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -15,7 +18,7 @@ RUN pnpm install --ignore-workspace
 COPY src/prisma ./src/prisma
 
 # Generate Prisma client
-RUN npx prisma generate --schema=src/prisma/schema.prisma || true
+RUN npx prisma generate --schema=src/prisma/schema.prisma
 
 # Copy source code
 COPY . .
