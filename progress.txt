@@ -883,3 +883,43 @@ Started: 2026-01-21
 
 **Commit:** cf84595
 ---
+
+## 2026-01-22 - E6-S02: Sitemap y robots.txt
+
+**Que se implemento:**
+- /robots.txt generado dinamicamente con Next.js MetadataRoute.Robots:
+  - Permite indexacion de todas las paginas publicas
+  - Bloquea /admin/, /checkout/, /carrito/, /api/, /_next/
+  - Referencia al sitemap.xml
+- /sitemap.xml generado dinamicamente con Next.js MetadataRoute.Sitemap:
+  - Paginas estaticas: /, /productos, /contacto
+  - Categorias dinamicas incluyendo subcategorias (prioridad 0.8)
+  - Productos dinamicos con fecha de actualizacion (prioridad 0.7)
+  - Revalidacion cada hora con next: { revalidate: 3600 }
+- API mejorada para incluir updatedAt:
+  - GET /api/products ahora incluye updatedAt en cada producto
+  - GET /api/categories incluye updatedAt en categorias y subcategorias
+- Fix de errores de build por useSearchParams sin Suspense:
+  - /admin/productos: Suspense boundary agregado
+  - /admin/pedidos: Suspense boundary agregado
+  - /admin/mensajes: Suspense boundary agregado
+
+**Archivos creados:**
+- apps/web/src/app/robots.ts
+- apps/web/src/app/sitemap.ts
+
+**Archivos modificados:**
+- apps/api/src/routes/products.ts (agregado updatedAt al resultado)
+- apps/api/src/routes/categories.ts (agregado updatedAt al resultado)
+- apps/web/src/app/admin/productos/page.tsx (Suspense boundary)
+- apps/web/src/app/admin/pedidos/page.tsx (Suspense boundary)
+- apps/web/src/app/admin/mensajes/page.tsx (Suspense boundary)
+
+**Aprendizajes para futuras iteraciones:**
+- En Next.js 14 App Router, useSearchParams() requiere Suspense boundary para builds de produccion
+- robots.ts y sitemap.ts en app/ se generan automaticamente como rutas
+- El sitemap puede usar fetch con revalidate para actualizacion automatica
+- El patron de Suspense wrapper mantiene el componente principal sin cambios
+
+**Commit:** eccb41d
+---

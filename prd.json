@@ -460,8 +460,8 @@
         "Actualización automática del sitemap"
       ],
       "priority": 27,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completado 2026-01-22. Commit eccb41d"
     },
     {
       "id": "E7-S01",
