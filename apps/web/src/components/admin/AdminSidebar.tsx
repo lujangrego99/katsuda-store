@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Settings,
   Store,
+  Truck,
 } from 'lucide-react';
 
 const navigation = [
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'Categorías', href: '/admin/categorias', icon: FolderTree },
   { name: 'Marcas', href: '/admin/marcas', icon: Tags },
   { name: 'Pedidos', href: '/admin/pedidos', icon: ShoppingCart },
+  { name: 'Envios', href: '/admin/envios', icon: Truck },
   { name: 'Mensajes', href: '/admin/mensajes', icon: MessageSquare },
   { name: 'Configuración', href: '/admin/configuracion', icon: Settings },
 ];

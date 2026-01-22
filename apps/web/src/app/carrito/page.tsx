@@ -12,8 +12,11 @@ import {
   Package,
   Loader2,
   ShoppingBag,
+  Truck,
+  MapPin,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCart, CartItem } from '@/context/CartContext';
 import { ProductCard } from '@/components/ProductCard';
@@ -181,10 +184,35 @@ function EmptyCart({ featuredProducts }: { featuredProducts: FeaturedProduct[] }
   );
 }
 
+interface ShippingData {
+  available: boolean;
+  province?: string;
+  zone?: string;
+  message?: string;
+  delivery?: {
+    available: boolean;
+    price: number;
+    freeShipping: boolean;
+    freeShippingMin: number | null;
+    amountForFreeShipping: number | null;
+    estimatedDays: string;
+    message: string;
+  };
+  pickup?: {
+    available: boolean;
+    price: number;
+    message: string;
+    locations?: string[];
+  };
+}
+
 export default function CartPage() {
   const { cart, loading, error, updateQuantity, removeFromCart } = useCart();
   const [updating, setUpdating] = useState<string | null>(null);
   const [featuredProducts, setFeaturedProducts] = useState<FeaturedProduct[]>([]);
+  const [postalCode, setPostalCode] = useState('');
+  const [shippingData, setShippingData] = useState<ShippingData | null>(null);
+  const [calculatingShipping, setCalculatingShipping] = useState(false);
 
   useEffect(() => {
     fetch(`${API_URL}/api/products/featured?limit=4`)
@@ -192,6 +220,35 @@ export default function CartPage() {
       .then((data) => setFeaturedProducts(data.data || []))
       .catch(console.error);
   }, []);
+
+  const handleCalculateShipping = async () => {
+    if (!postalCode || postalCode.length < 4 || !cart) {
+      return;
+    }
+
+    setCalculatingShipping(true);
+    setShippingData(null);
+
+    try {
+      const response = await fetch(`${API_URL}/api/shipping/calculate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postalCode,
+          cartTotal: cart.subtotal,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.data) {
+        setShippingData(result.data);
+      }
+    } catch {
+      console.error('Error calculating shipping');
+    }
+
+    setCalculatingShipping(false);
+  };
 
   const handleUpdateQuantity = async (itemId: string, quantity: number) => {
     if (quantity < 1) return;
@@ -268,19 +325,99 @@ export default function CartPage() {
                   <span>Subtotal ({cart.itemCount} productos)</span>
                   <span>{formatPrice(cart.subtotal)}</span>
                 </div>
+
+                {/* Calculadora de envío */}
+                <div className="border rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Truck className="h-4 w-4 text-katsuda-700" />
+                    <span className="text-sm font-medium">Calcular envio</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="CP"
+                      value={postalCode}
+                      onChange={(e) => setPostalCode(e.target.value.replace(/\D/g, ''))}
+                      maxLength={4}
+                      className="flex-1 h-9"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCalculateShipping}
+                      disabled={calculatingShipping || postalCode.length < 4}
+                    >
+                      {calculatingShipping ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        'Calcular'
+                      )}
+                    </Button>
+                  </div>
+
+                  {shippingData && (
+                    <div className="mt-3 space-y-2">
+                      {shippingData.available && shippingData.delivery ? (
+                        <div className={`p-2 rounded text-sm ${shippingData.delivery.freeShipping ? 'bg-green-50 text-green-700' : 'bg-gray-50'}`}>
+                          <div className="flex items-center gap-2">
+                            <Truck className={`h-4 w-4 ${shippingData.delivery.freeShipping ? 'text-green-600' : 'text-gray-500'}`} />
+                            <span className="font-medium">{shippingData.delivery.message}</span>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1 ml-6">
+                            Llega en {shippingData.delivery.estimatedDays}
+                          </p>
+                          {!shippingData.delivery.freeShipping && shippingData.delivery.amountForFreeShipping && (
+                            <p className="text-xs text-katsuda-600 mt-1 ml-6">
+                              Agrega {formatPrice(shippingData.delivery.amountForFreeShipping)} para envio gratis
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="p-2 rounded bg-yellow-50 text-sm">
+                          <p className="text-yellow-700">{shippingData.message || 'No enviamos a esta zona'}</p>
+                        </div>
+                      )}
+
+                      {shippingData.pickup && (
+                        <div className="p-2 rounded bg-katsuda-50 text-sm">
+                          <div className="flex items-center gap-2 text-katsuda-700">
+                            <MapPin className="h-4 w-4" />
+                            <span className="font-medium">Retiro gratis</span>
+                          </div>
+                          {shippingData.pickup.locations && (
+                            <ul className="mt-1 ml-6 text-xs text-gray-600">
+                              {shippingData.pickup.locations.map((loc, i) => (
+                                <li key={i}>• {loc}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex justify-between text-gray-600">
                   <span>Envio</span>
-                  <span className="text-sm">A calcular</span>
+                  <span className="text-sm">
+                    {shippingData?.delivery
+                      ? shippingData.delivery.freeShipping
+                        ? 'Gratis'
+                        : formatPrice(shippingData.delivery.price)
+                      : 'A calcular'}
+                  </span>
                 </div>
                 <hr />
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span className="text-katsuda-900">{formatPrice(cart.subtotal)}</span>
+                  <span className="text-katsuda-900">
+                    {formatPrice(cart.subtotal + (shippingData?.delivery?.price || 0))}
+                  </span>
                 </div>
                 <div className="bg-katsuda-50 rounded-lg p-3">
                   <p className="text-sm text-katsuda-800">
                     <span className="font-semibold">Con transferencia:</span>{' '}
-                    {formatPrice(cart.transferSubtotal)}
+                    {formatPrice(cart.transferSubtotal + (shippingData?.delivery?.price || 0))}
                     <span className="block text-xs mt-1 text-katsuda-600">
                       Ahorra {formatPrice(cart.subtotal - cart.transferSubtotal)} (9% OFF)
                     </span>

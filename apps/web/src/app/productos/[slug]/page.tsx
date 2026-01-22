@@ -113,6 +113,27 @@ function ProductDetailContent() {
   const [quantity, setQuantity] = useState(1);
   const [postalCode, setPostalCode] = useState('');
   const [shippingResult, setShippingResult] = useState<string | null>(null);
+  const [shippingData, setShippingData] = useState<{
+    available: boolean;
+    province?: string;
+    zone?: string;
+    message?: string;
+    delivery?: {
+      available: boolean;
+      price: number;
+      freeShipping: boolean;
+      freeShippingMin: number | null;
+      amountForFreeShipping: number | null;
+      estimatedDays: string;
+      message: string;
+    };
+    pickup?: {
+      available: boolean;
+      price: number;
+      message: string;
+      locations?: string[];
+    };
+  } | null>(null);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
@@ -150,27 +171,36 @@ function ProductDetailContent() {
 
   const handleCalculateShipping = async () => {
     if (!postalCode || postalCode.length < 4) {
-      setShippingResult('Ingresa un codigo postal valido');
+      setShippingResult(null);
+      setShippingData(null);
       return;
     }
 
     setCalculatingShipping(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    setShippingResult(null);
+    setShippingData(null);
 
-    const cp = parseInt(postalCode);
-    if (cp >= 5500 && cp <= 5599) {
-      if (product?.freeShipping) {
-        setShippingResult('Envio gratis a tu zona!');
+    try {
+      const productTotal = product ? product.price * quantity : 0;
+      const response = await fetch(`${API_URL}/api/shipping/calculate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postalCode,
+          productPrice: productTotal,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.data) {
+        setShippingData(result.data);
       } else {
-        setShippingResult('Envio a domicilio: $4.500 - Llega en 24-48hs');
+        setShippingResult('Error al calcular envío');
       }
-    } else if (cp >= 5400 && cp <= 5699) {
-      setShippingResult('Envio a domicilio: $6.500 - Llega en 3-5 dias');
-    } else if (cp >= 5400 && cp <= 5499) {
-      setShippingResult('Envio a domicilio: $5.500 - Llega en 48-72hs');
-    } else {
-      setShippingResult('Consulta disponibilidad al 261 429-2473');
+    } catch {
+      setShippingResult('Error al calcular envío. Intenta nuevamente.');
     }
+
     setCalculatingShipping(false);
   };
 
@@ -449,7 +479,7 @@ function ProductDetailContent() {
                     <Button
                       variant="outline"
                       onClick={handleCalculateShipping}
-                      disabled={calculatingShipping}
+                      disabled={calculatingShipping || postalCode.length < 4}
                     >
                       {calculatingShipping ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -458,15 +488,69 @@ function ProductDetailContent() {
                       )}
                     </Button>
                   </div>
+
                   {shippingResult && (
-                    <p className="mt-3 text-sm text-katsuda-700 flex items-start gap-2">
+                    <p className="mt-3 text-sm text-red-600 flex items-start gap-2">
                       <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
                       {shippingResult}
                     </p>
                   )}
-                  <p className="mt-2 text-xs text-gray-500">
-                    Retiro gratis en sucursales: Mendoza y San Juan
-                  </p>
+
+                  {shippingData && (
+                    <div className="mt-3 space-y-2">
+                      {shippingData.available && shippingData.delivery ? (
+                        <>
+                          <div className={`p-3 rounded-lg ${shippingData.delivery.freeShipping ? 'bg-green-50 border border-green-200' : 'bg-gray-50'}`}>
+                            <div className="flex items-center gap-2">
+                              <Truck className={`h-4 w-4 ${shippingData.delivery.freeShipping ? 'text-green-600' : 'text-gray-600'}`} />
+                              <span className={`font-medium ${shippingData.delivery.freeShipping ? 'text-green-700' : 'text-gray-900'}`}>
+                                {shippingData.delivery.message}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Llega en {shippingData.delivery.estimatedDays}
+                            </p>
+                            {!shippingData.delivery.freeShipping && shippingData.delivery.amountForFreeShipping && (
+                              <p className="text-xs text-katsuda-600 mt-1">
+                                Agrega {formatPrice(shippingData.delivery.amountForFreeShipping)} mas para envio gratis
+                              </p>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                          <p className="text-sm text-yellow-700">
+                            {shippingData.message || 'No realizamos envios a esta zona'}
+                          </p>
+                        </div>
+                      )}
+
+                      {shippingData.pickup && (
+                        <div className="p-3 rounded-lg bg-katsuda-50 border border-katsuda-200">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-katsuda-600" />
+                            <span className="font-medium text-katsuda-700">Retiro gratis en sucursal</span>
+                          </div>
+                          {shippingData.pickup.locations && shippingData.pickup.locations.length > 0 && (
+                            <ul className="mt-2 space-y-1">
+                              {shippingData.pickup.locations.map((loc, idx) => (
+                                <li key={idx} className="text-xs text-gray-600 flex items-start gap-1">
+                                  <span className="text-katsuda-500">•</span>
+                                  {loc}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!shippingData && !shippingResult && (
+                    <p className="mt-2 text-xs text-gray-500">
+                      Retiro gratis en sucursales: Mendoza y San Juan
+                    </p>
+                  )}
                 </CardContent>
               </Card>
 
