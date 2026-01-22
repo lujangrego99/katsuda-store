@@ -261,3 +261,37 @@ Started: 2026-01-21
 
 **Commit:** e9defaa
 ---
+
+## 2026-01-22 - E2-S05: Página de detalle de producto
+
+**Qué se implementó:**
+- Ruta /productos/[slug] con página de detalle completa
+- Breadcrumb dinámico: Inicio > Categoría padre (si existe) > Categoría > Producto
+- Galería de imágenes con imagen principal grande y thumbnails seleccionables
+- Info de producto: marca, SKU, nombre, precios (normal, transferencia con 9% OFF), cuotas (12 sin interés)
+- Indicador de stock con advertencia de últimas unidades
+- Selector de cantidad con botones +/- y validación de stock máximo
+- Botón "Agregar al carrito" (placeholder, se conectará en E3-S02)
+- Calculadora de envío por código postal con lógica simulada para Mendoza y San Juan
+- Tabs con Descripción y Especificaciones (atributos, peso, dimensiones)
+- Sección de productos relacionados usando ProductCard
+- Meta tags SEO dinámicos con generateMetadata de Next.js
+- Open Graph tags para compartir en redes sociales
+- JSON-LD Schema.org para Product y BreadcrumbList
+
+**Archivos creados:**
+- apps/web/src/app/productos/[slug]/page.tsx (Server Component con metadata)
+- apps/web/src/app/productos/[slug]/ProductDetail.tsx (Client Component UI)
+- apps/web/src/components/ui/tabs.tsx (componente Tabs de shadcn/ui)
+
+**Archivos modificados:**
+- apps/web/package.json (dependencia @radix-ui/react-tabs)
+
+**Aprendizajes para futuras iteraciones:**
+- Para SEO dinámico en Next.js 14, usar Server Component con generateMetadata y Client Component separado para UI
+- JSON-LD schema se inyecta con dangerouslySetInnerHTML en el Server Component
+- La calculadora de envío básica se puede simular con rangos de código postal hasta implementar API completa
+- El botón agregar al carrito es placeholder - se integrará cuando exista CartContext en E3-S02
+
+**Commit:** d35bd3a
+---
