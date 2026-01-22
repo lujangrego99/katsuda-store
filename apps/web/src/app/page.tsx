@@ -25,7 +25,7 @@ interface Category {
   name: string;
   slug: string;
   image: string | null;
-  _count: { products: number };
+  productCount: number;
 }
 
 interface Brand {
@@ -275,7 +275,7 @@ export default function Home() {
                       {category.name}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {category._count.products} productos
+                      {category.productCount || 0} productos
                     </p>
                   </CardContent>
                 </Card>

@@ -25,7 +25,7 @@ interface Brand {
   id: string;
   name: string;
   slug: string;
-  _count?: { products: number };
+  productCount?: number;
 }
 
 interface ProductFiltersProps {
@@ -189,9 +189,9 @@ export function ProductFilters({
                   }`}
                 >
                   {brand.name}
-                  {brand._count && (
+                  {brand.productCount !== undefined && (
                     <span className="text-gray-400 ml-1">
-                      ({brand._count.products})
+                      ({brand.productCount})
                     </span>
                   )}
                 </button>
