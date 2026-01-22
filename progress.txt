@@ -509,3 +509,102 @@ Started: 2026-01-21
 
 **Commit:** 5261913
 ---
+
+## 2026-01-22 - E4-S03: CRUD de productos en admin
+
+**Qué se implementó:**
+- API CRUD completa para productos admin:
+  - GET /api/admin/products - Lista paginada con filtros (search, category, brand, lowStock, isActive)
+  - GET /api/admin/products/:id - Detalle completo para edición
+  - POST /api/admin/products - Crear producto con imágenes y atributos
+  - PATCH /api/admin/products/:id - Actualizar producto (incluye reemplazo de imágenes/atributos)
+  - DELETE /api/admin/products/:id - Eliminar producto (protección si tiene pedidos)
+  - PATCH /api/admin/products/:id/toggle - Activar/desactivar producto
+- Página /admin/productos con:
+  - Tabla de productos con imagen, nombre, SKU, categoría, precio, stock, estado
+  - Filtros: búsqueda, categoría, marca, solo bajo stock, estado activo
+  - Paginación con navegación
+  - Switch para activar/desactivar productos
+  - Botones de editar y eliminar con confirmación
+- Formulario de producto con tabs:
+  - Básico: SKU, nombre, categoría, marca, descripción corta/larga, stock, opciones (activo, destacado, envío gratis)
+  - Precios: precio, precio comparación, precio transferencia, costo, peso, dimensiones
+  - Imágenes: agregar URLs de imágenes, reordenar, eliminar
+  - Atributos: especificaciones técnicas dinámicas (nombre/valor)
+  - SEO: título, descripción, tags
+- Componentes shadcn/ui nuevos: Table, Badge, Dialog, Textarea, Switch
+
+**Archivos creados:**
+- apps/api/src/routes/admin/products.ts
+- apps/web/src/app/admin/productos/page.tsx
+- apps/web/src/app/admin/productos/ProductForm.tsx
+- apps/web/src/components/ui/table.tsx
+- apps/web/src/components/ui/badge.tsx
+- apps/web/src/components/ui/dialog.tsx
+- apps/web/src/components/ui/textarea.tsx
+- apps/web/src/components/ui/switch.tsx
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integración adminProductsRouter)
+- apps/web/package.json (nueva dependencia @radix-ui/react-switch)
+
+**Aprendizajes para futuras iteraciones:**
+- Para formularios complejos con datos que se cargan via API, pasar solo el ID y que el formulario cargue los datos
+- Usar Prisma.$transaction para operaciones que modifican múltiples entidades relacionadas (producto + imágenes + atributos)
+- El patrón de generar slug a partir del nombre con timestamp fallback evita colisiones
+- Validar antes de eliminar si hay relaciones (orderItems) para evitar pérdida de datos históricos
+
+**Commit:** 1153004
+---
+
+## 2026-01-22 - E4-S04: Gestión de categorías y marcas en admin
+
+**Qué se implementó:**
+- API CRUD para categorías admin con soporte de jerarquía padre/hijo:
+  - GET /api/admin/categories - Lista jerárquica con hijos y conteo de productos
+  - GET /api/admin/categories/all - Lista plana para selects
+  - GET /api/admin/categories/:id - Detalle de categoría
+  - POST /api/admin/categories - Crear categoría
+  - PATCH /api/admin/categories/:id - Actualizar categoría
+  - DELETE /api/admin/categories/:id - Eliminar (validando que no tenga hijos ni productos)
+  - PATCH /api/admin/categories/:id/toggle - Activar/desactivar
+  - PATCH /api/admin/categories/reorder - Reordenar categorías
+- API CRUD para marcas admin:
+  - GET /api/admin/brands - Lista paginada con búsqueda y filtros
+  - GET /api/admin/brands/all - Lista plana para selects
+  - GET /api/admin/brands/:id - Detalle de marca
+  - POST /api/admin/brands - Crear marca
+  - PATCH /api/admin/brands/:id - Actualizar marca
+  - DELETE /api/admin/brands/:id - Eliminar (validando que no tenga productos)
+  - PATCH /api/admin/brands/:id/toggle - Activar/desactivar
+- UI de gestión de categorías (/admin/categorias):
+  - Tabla con visualización jerárquica (padre con hijos indentados)
+  - Formulario de creación/edición con selector de categoría padre
+  - Switch para activar/desactivar
+  - Botones de editar y eliminar con confirmación
+  - Validación de eliminación mostrando productos y subcategorías asociadas
+- UI de gestión de marcas (/admin/marcas):
+  - Tabla con búsqueda y filtro por estado
+  - Paginación
+  - Formulario de creación/edición con preview de logo
+  - Switch para activar/desactivar
+  - Botones de editar y eliminar con confirmación
+
+**Archivos creados:**
+- apps/api/src/routes/admin/categories.ts
+- apps/api/src/routes/admin/brands.ts
+- apps/web/src/app/admin/categorias/page.tsx
+- apps/web/src/app/admin/marcas/page.tsx
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integración adminCategoriesRouter, adminBrandsRouter)
+- apps/api/src/middleware/auth.ts (fix lint warning para namespace)
+
+**Aprendizajes para futuras iteraciones:**
+- Las categorías jerárquicas limitan a 2 niveles máximo para simplicidad
+- Validar antes de eliminar entidades con relaciones (productos, subcategorías)
+- El endpoint /all retorna lista plana útil para selectores en formularios
+- Para namespace en Express con declare global, usar eslint-disable-next-line en la línea del namespace
+
+**Commit:** c42a634
+---

@@ -330,8 +330,8 @@
         "Verificar en browser con dev-browser skill"
       ],
       "priority": 19,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completado 2026-01-22. Commit 1153004"
     },
     {
       "id": "E4-S04",
@@ -345,8 +345,8 @@
         "Verificar en browser con dev-browser skill"
       ],
       "priority": 20,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completado 2026-01-22. Commit c42a634"
     },
     {
       "id": "E4-S05",
