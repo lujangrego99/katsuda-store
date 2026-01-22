@@ -56,9 +56,54 @@ pnpm db:studio
 # Build de producción
 pnpm build
 
-# Con Docker
+# Con Docker (desarrollo)
 docker-compose up --build
 ```
+
+## Deploy
+
+### Variables de Entorno
+
+Copiar `.env.example` a `.env` y configurar:
+
+```bash
+DATABASE_URL=postgres://user:pass@host:5432/katsuda
+JWT_SECRET=your-secret-key
+NEXT_PUBLIC_API_URL=https://api.katsuda.com.ar
+NEXT_PUBLIC_SITE_URL=https://katsuda.com.ar
+```
+
+### Docker (Producción)
+
+```bash
+# Build y ejecutar
+docker-compose -f docker-compose.prod.yml up --build -d
+
+# Ver logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Parar
+docker-compose -f docker-compose.prod.yml down
+```
+
+### Easypanel
+
+1. Crear servicio **katsuda-front**:
+   - Source: GitHub repo
+   - Dockerfile: `apps/web/Dockerfile`
+   - Port: 3000
+   - Env: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`
+
+2. Crear servicio **katsuda-api**:
+   - Source: GitHub repo
+   - Dockerfile: `apps/api/Dockerfile`
+   - Port: 3001
+   - Env: `DATABASE_URL`, `JWT_SECRET`
+
+### Health Checks
+
+- **API**: `GET /health` - Verifica conexión a BD
+- **Web**: Puerto 3000 responde
 
 ## Colores
 
