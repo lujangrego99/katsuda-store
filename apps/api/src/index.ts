@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import categoriesRouter from './routes/categories';
 import brandsRouter from './routes/brands';
 import productsRouter from './routes/products';
+import cartRouter from './routes/cart';
 
 const app: Express = express();
 const prisma = new PrismaClient();
@@ -29,6 +30,7 @@ app.get('/health', async (_req: Request, res: Response) => {
 app.use('/api/categories', categoriesRouter);
 app.use('/api/brands', brandsRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/cart', cartRouter);
 
 // API info
 app.get('/api', (_req: Request, res: Response) => {
@@ -40,7 +42,7 @@ app.get('/api', (_req: Request, res: Response) => {
       categories: '/api/categories',
       brands: '/api/brands',
       products: '/api/products',
-      cart: '/api/cart (coming soon)',
+      cart: '/api/cart',
     }
   });
 });
