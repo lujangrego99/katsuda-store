@@ -490,8 +490,8 @@
         "pnpm test funciona"
       ],
       "priority": 29,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completado 2026-01-22. 15 tests unitarios para pricing utils (transfer price, installments, cart totals, free shipping). pnpm test funciona."
     }
   ]
 }

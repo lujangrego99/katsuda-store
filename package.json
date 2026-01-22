@@ -11,6 +11,7 @@
     "build:api": "pnpm --filter @katsuda/api build",
     "lint": "pnpm run --parallel lint",
     "typecheck": "pnpm run --parallel typecheck",
+    "test": "pnpm --filter @katsuda/api test",
     "db:migrate": "pnpm --filter @katsuda/api db:migrate",
     "db:seed": "pnpm --filter @katsuda/api db:seed",
     "db:studio": "pnpm --filter @katsuda/api db:studio"
