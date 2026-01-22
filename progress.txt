@@ -196,3 +196,32 @@ Started: 2026-01-21
 
 **Commit:** c948bbc
 ---
+
+## 2026-01-22 - E2-S03: Home page
+
+**Qué se implementó:**
+- Hero banner con gradiente Katsuda (900 → 800 → 700), imagen de grifería, badge "9% OFF Transferencia"
+- CTAs "Ver Catálogo" y "Contactanos" con iconos de envío y garantía
+- Sección "Por qué elegirnos" con 3 cards (Confiabilidad, Efectividad, Trayectoria) con iconos Lucide
+- Grid de categorías responsivo (2 cols mobile, 6 desktop) con imágenes y conteo de productos desde API
+- Carousel de productos destacados con navegación prev/next, badges OFERTA y ENVÍO GRATIS
+- Cards de producto con marca, nombre, precio, precio tachado y precio transferencia
+- Sección de logos de marcas con efecto grayscale hover
+- Formulario de contacto rápido con validación, estado de envío y feedback visual
+- Diseño responsive mobile-first con controles de carousel adaptables
+- Wave SVG decorativa entre hero y contenido
+
+**Archivos creados:**
+- apps/web/src/components/ui/card.tsx (componente Card de shadcn/ui)
+
+**Archivos modificados:**
+- apps/web/src/app/page.tsx (reescrito completamente con home page)
+
+**Aprendizajes para futuras iteraciones:**
+- Usar 'use client' para páginas con hooks de estado y fetch en useEffect
+- El carousel simple se puede hacer con translate CSS y estado de índice
+- formatPrice con Intl.NumberFormat('es-AR', {style: 'currency'}) para precios en pesos
+- API_URL debe definirse con NEXT_PUBLIC_ para ser accesible en el cliente
+
+**Commit:** 4e0b97c
+---
