@@ -1,0 +1,38 @@
+# Ralph Progress Log
+Started: 2026-01-21
+
+## Codebase Patterns
+- Monorepo con pnpm workspaces: apps/web (Next.js), apps/api (Express), packages/shared (tipos)
+- Colores Katsuda en Tailwind: katsuda-900 (#1B5E20), katsuda-700 (#2E7D32), katsuda-500 (#4CAF50)
+- Express usa tipos explícitos: Express, Request, Response de 'express'
+
+---
+
+## 2026-01-21 22:XX - E0-S01: Crear estructura del proyecto monorepo
+
+**Qué se implementó:**
+- Monorepo con pnpm workspaces configurado
+- apps/web: Next.js 14 con App Router, Tailwind, TypeScript
+- apps/api: Express + TypeScript (Prisma pendiente para E0-S02)
+- packages/shared: Tipos compartidos (Product, Category, Cart, Order, etc.)
+- docker-compose.yml para desarrollo
+- Dockerfiles para ambos servicios
+- Colores de Katsuda en tailwind.config.ts
+
+**Archivos creados:**
+- pnpm-workspace.yaml
+- package.json (raíz)
+- apps/web/* (Next.js completo)
+- apps/api/* (Express básico)
+- packages/shared/* (tipos)
+- docker-compose.yml
+- .gitignore
+- README.md
+
+**Aprendizajes para futuras iteraciones:**
+- TypeScript en Express requiere tipos explícitos para evitar TS2742
+- pnpm workspaces requiere "workspace:*" en dependencias internas
+- Next.js standalone output necesita estructura específica en Dockerfile
+
+**Commit:** d2a40e1
+---
