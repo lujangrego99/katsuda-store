@@ -689,3 +689,55 @@ Started: 2026-01-21
 
 **Commit:** 9ac70f0
 ---
+
+## 2026-01-22 - E5-S02: Calculadora de envio
+
+**Que se implemento:**
+- API /api/shipping/calculate mejorada:
+  - Soporte para productPrice (producto individual) y cartTotal (carrito)
+  - Mapeo de codigos postales mas detallado para Gran Mendoza (5500-5549) y San Juan Capital (5400-5413)
+  - Calculo de envio gratis si supera monto minimo configurado
+  - Mensaje informativo de cuanto falta para envio gratis
+  - Direcciones de sucursales dinamicas desde Settings
+- Calculadora de envio en pagina de producto:
+  - Conectada a la API real (antes era simulada)
+  - Muestra precio de envio, tiempo estimado de entrega
+  - Muestra opciones de retiro gratis en sucursal
+  - Indica si hay envio gratis y cuanto falta para obtenerlo
+- Calculadora de envio en pagina de carrito:
+  - Input de CP con calculo via API
+  - Muestra envio a domicilio con precio
+  - Muestra retiro gratis con direcciones de sucursales
+  - Total dinamico incluyendo envio
+- API CRUD admin para zonas de envio:
+  - GET /api/admin/shipping/zones - Lista zonas con filtros
+  - POST /api/admin/shipping/zones - Crear zona
+  - PATCH /api/admin/shipping/zones/:id - Actualizar zona
+  - DELETE /api/admin/shipping/zones/:id - Eliminar zona
+  - PATCH /api/admin/shipping/zones/:id/toggle - Activar/desactivar
+- Pagina admin /admin/envios:
+  - Tabla con zonas de envio configuradas
+  - Formulario para crear/editar zonas
+  - Filtro por provincia
+  - Switch para activar/desactivar zonas
+  - Botones de editar y eliminar
+
+**Archivos creados:**
+- apps/api/src/routes/admin/shipping.ts
+- apps/web/src/app/admin/envios/page.tsx
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integracion adminShippingRouter)
+- apps/api/src/routes/shipping.ts (mejoras en calculo)
+- apps/web/src/app/productos/[slug]/page.tsx (calculadora con API real)
+- apps/web/src/app/carrito/page.tsx (calculadora de envio agregada)
+- apps/web/src/components/admin/AdminSidebar.tsx (link a envios)
+
+**Aprendizajes para futuras iteraciones:**
+- El endpoint /calculate puede recibir productPrice o cartTotal segun el contexto
+- Los rangos de codigos postales deben ser mas granulares para diferenciar zonas urbanas
+- El estado shippingData es mejor que shippingResult (string) para mostrar UI compleja
+- El calculo de amountForFreeShipping ayuda a incentivar compras mayores
+
+**Commit:** f42f8fc
+---
