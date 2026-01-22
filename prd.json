@@ -67,8 +67,8 @@
         "Typecheck pasa"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completado 2026-01-21. Commit ef12bfa"
     },
     {
       "id": "E1-S02",
@@ -82,8 +82,8 @@
         "Typecheck pasa"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completado 2026-01-21. Commit ef12bfa"
     },
     {
       "id": "E1-S03",
@@ -97,8 +97,8 @@
         "Typecheck pasa"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completado 2026-01-21. Commit ef12bfa"
     },
     {
       "id": "E1-S04",

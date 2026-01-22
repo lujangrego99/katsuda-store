@@ -71,3 +71,30 @@ Started: 2026-01-21
 
 **Commit:** be89466
 ---
+
+## 2026-01-21 23:XX - E1-S01/S02/S03: Schema completo de Prisma
+
+**Qué se implementó:**
+- Schema completo con todos los modelos del e-commerce
+- Category con jerarquía padre/hijo
+- Brand para marcas
+- Product con precios múltiples (normal, transferencia, comparación)
+- ProductImage y ProductAttribute
+- Customer, Address para clientes
+- Cart, CartItem con soporte anónimo (sessionId)
+- Order, OrderItem con estados y guest checkout
+- Admin con roles (SUPER, ADMIN, STAFF)
+- Contact para mensajes
+- ShippingZone para zonas de envío
+- Settings singleton para configuración
+
+**Archivos modificados:**
+- apps/api/src/prisma/schema.prisma (expandido completamente)
+
+**Aprendizajes:**
+- Usar prisma db push para desarrollo rápido (sin crear archivos de migración)
+- Los índices son importantes para relaciones frecuentes
+- Settings con @id @default("singleton") para configuración única
+
+**Commit:** ef12bfa
+---
