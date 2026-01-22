@@ -5,6 +5,8 @@ Started: 2026-01-21
 - Monorepo con pnpm workspaces: apps/web (Next.js), apps/api (Express), packages/shared (tipos)
 - Colores Katsuda en Tailwind: katsuda-900 (#1B5E20), katsuda-700 (#2E7D32), katsuda-500 (#4CAF50)
 - Express usa tipos explícitos: Express, Request, Response de 'express'
+- shadcn/ui: Componentes en `@/components/ui/`, configuración en `components.json`
+- Layout global: Header y Footer en layout.tsx, contenido específico en page.tsx
 
 ---
 
@@ -119,4 +121,49 @@ Started: 2026-01-21
 - Settings singleton usa id: 'singleton' como clave única
 
 **Commit:** 3a3f2d0
+---
+
+## 2026-01-22 - E2-S01: Layout base y navegación del frontend
+
+**Qué se implementó:**
+- Instalación y configuración de shadcn/ui con variables CSS de colores Katsuda
+- Componentes UI base: Button, Input, Sheet (para menú móvil)
+- Header con:
+  - Top bar con teléfono y botón WhatsApp
+  - Logo Katsuda con slogan
+  - Navegación de categorías (desktop)
+  - Menú hamburguesa (mobile) usando Sheet de Radix
+  - Buscador expandible (mobile) y fijo (desktop)
+  - Icono de carrito con badge de cantidad
+- Footer con:
+  - Descripción de la empresa
+  - Info de sucursales Mendoza y San Juan (dirección, teléfono, horarios)
+  - Links útiles y marcas que trabajan
+  - Redes sociales (Facebook, Instagram)
+  - Copyright y email
+- Layout integrado en Next.js App Router (layout.tsx)
+- Diseño responsive mobile-first
+
+**Archivos creados:**
+- apps/web/components.json (config shadcn/ui)
+- apps/web/src/components/ui/button.tsx
+- apps/web/src/components/ui/input.tsx
+- apps/web/src/components/ui/sheet.tsx
+- apps/web/src/components/Header.tsx
+- apps/web/src/components/Footer.tsx
+
+**Archivos modificados:**
+- apps/web/package.json (nuevas dependencias: @radix-ui/react-slot, @radix-ui/react-dialog, class-variance-authority, tailwindcss-animate)
+- apps/web/tailwind.config.ts (añadido darkMode, variables CSS shadcn, animaciones)
+- apps/web/src/styles/globals.css (variables CSS para shadcn/ui con colores Katsuda)
+- apps/web/src/app/layout.tsx (integrado Header y Footer)
+- apps/web/src/app/page.tsx (simplificado, solo contenido)
+
+**Aprendizajes para futuras iteraciones:**
+- shadcn/ui puede configurarse manualmente creando components.json y copiando componentes
+- Las variables CSS de shadcn/ui usan formato HSL sin "hsl()" wrapper: `122 76% 23%`
+- Usar Sheet de Radix para menús móviles, es más accesible que un drawer casero
+- El layout de Next.js con flex-col y flex-1 en main asegura que el footer quede abajo
+
+**Commit:** 6435c12
 ---
