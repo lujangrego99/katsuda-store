@@ -115,8 +115,8 @@
         "pnpm db:seed funciona"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completado 2026-01-22. Commit 3a3f2d0"
     },
     {
       "id": "E2-S01",

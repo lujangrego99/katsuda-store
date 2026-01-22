@@ -98,3 +98,25 @@ Started: 2026-01-21
 
 **Commit:** ef12bfa
 ---
+
+## 2026-01-22 - E1-S04: Seed de datos iniciales
+
+**Qué se implementó:**
+- Script seed.ts completo con upsert para idempotencia
+- Categorías: Griferías (con subcategorías Cocina, Baño, Ducha), Sanitarios, Termotanques, Bombas, Hogar, Instalaciones
+- Marcas: FV, Piazza, Ferrum, Roca, Aqua, DECA
+- 14 productos de ejemplo con imágenes Unsplash, precios, atributos
+- Admin por defecto: admin@katsuda.com.ar / katsuda2024
+- Settings con info de Katsuda: teléfonos, direcciones, horarios, redes sociales
+- 4 zonas de envío: Gran Mendoza, Interior Mendoza, San Juan Capital, Interior San Juan
+
+**Archivos creados:**
+- apps/api/src/prisma/seed.ts
+
+**Aprendizajes para futuras iteraciones:**
+- Usar upsert para seeds idempotentes (se puede correr múltiples veces)
+- Crear IDs explícitos para entidades relacionadas para poder hacer upsert en images/attributes
+- Settings singleton usa id: 'singleton' como clave única
+
+**Commit:** 3a3f2d0
+---
