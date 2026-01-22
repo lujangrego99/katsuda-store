@@ -6,6 +6,9 @@ import categoriesRouter from './routes/categories';
 import brandsRouter from './routes/brands';
 import productsRouter from './routes/products';
 import cartRouter from './routes/cart';
+import checkoutRouter from './routes/checkout';
+import ordersRouter from './routes/orders';
+import shippingRouter from './routes/shipping';
 
 const app: Express = express();
 const prisma = new PrismaClient();
@@ -31,6 +34,9 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/brands', brandsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/checkout', checkoutRouter);
+app.use('/api/orders', ordersRouter);
+app.use('/api/shipping', shippingRouter);
 
 // API info
 app.get('/api', (_req: Request, res: Response) => {
@@ -43,6 +49,9 @@ app.get('/api', (_req: Request, res: Response) => {
       brands: '/api/brands',
       products: '/api/products',
       cart: '/api/cart',
+      checkout: '/api/checkout',
+      orders: '/api/orders',
+      shipping: '/api/shipping',
     }
   });
 });
