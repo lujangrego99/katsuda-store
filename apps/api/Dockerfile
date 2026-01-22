@@ -1,48 +1,35 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine
+
+WORKDIR /app
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-FROM base AS deps
-WORKDIR /app
+# Copy package files
+COPY package.json ./
 
-# Copy workspace files
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml* ./
-COPY apps/api/package.json ./apps/api/
-COPY packages/shared/package.json ./packages/shared/
+# Install dependencies (standalone, no workspace)
+RUN pnpm install --ignore-workspace
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile || pnpm install
-
-FROM base AS builder
-WORKDIR /app
-
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
-COPY . .
+# Copy prisma schema first (for generate)
+COPY src/prisma ./src/prisma
 
 # Generate Prisma client
-RUN pnpm --filter @katsuda/api db:generate || true
+RUN npx prisma generate --schema=src/prisma/schema.prisma || true
 
-# Build
-RUN pnpm --filter @katsuda/api build
+# Copy source code
+COPY . .
 
-FROM base AS runner
-WORKDIR /app
+# Build TypeScript
+RUN pnpm build
 
-ENV NODE_ENV production
-
-# Copy built files
-COPY --from=builder /app/apps/api/dist ./dist
-COPY --from=builder /app/apps/api/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
-
-# Copy Prisma schema for migrations
-COPY --from=builder /app/apps/api/src/prisma ./src/prisma
+ENV NODE_ENV=production
+ENV PORT=3001
 
 EXPOSE 3001
 
-ENV PORT 3001
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+  CMD wget -q --spider http://localhost:3001/health || exit 1
 
 CMD ["node", "dist/index.js"]
