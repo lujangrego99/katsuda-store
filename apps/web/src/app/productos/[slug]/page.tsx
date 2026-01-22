@@ -118,7 +118,7 @@ function ProductDetailContent() {
     setLoading(true);
     setError(null);
 
-    fetch(`\${API_URL}/api/products/\${slug}`)
+    fetch(`${API_URL}/api/products/${slug}`)
       .then((r) => {
         if (!r.ok) {
           throw new Error('Producto no encontrado');
@@ -170,7 +170,7 @@ function ProductDetailContent() {
   };
 
   const handleAddToCart = () => {
-    alert(`Agregado al carrito: \${quantity} x \${product?.name}`);
+    alert(`Agregado al carrito: ${quantity} x ${product?.name}`);
   };
 
   if (loading) {
@@ -223,7 +223,7 @@ function ProductDetailContent() {
               <>
                 <ChevronRight className="h-4 w-4 flex-shrink-0" />
                 <Link
-                  href={`/categoria/\${product.category.parent.slug}`}
+                  href={`/categoria/${product.category.parent.slug}`}
                   className="hover:text-katsuda-700 whitespace-nowrap"
                 >
                   {product.category.parent.name}
@@ -234,7 +234,7 @@ function ProductDetailContent() {
               <>
                 <ChevronRight className="h-4 w-4 flex-shrink-0" />
                 <Link
-                  href={`/categoria/\${product.category.slug}`}
+                  href={`/categoria/${product.category.slug}`}
                   className="hover:text-katsuda-700 whitespace-nowrap"
                 >
                   {product.category.name}
@@ -287,7 +287,7 @@ function ProductDetailContent() {
                     <button
                       key={image.id}
                       onClick={() => setSelectedImage(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors \${
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
                         selectedImage === index
                           ? 'border-katsuda-700'
                           : 'border-gray-200 hover:border-katsuda-300'
@@ -295,7 +295,7 @@ function ProductDetailContent() {
                     >
                       <Image
                         src={image.url}
-                        alt={image.alt || `\${product.name} - \${index + 1}`}
+                        alt={image.alt || `${product.name} - ${index + 1}`}
                         width={80}
                         height={80}
                         className="object-cover w-full h-full"
@@ -359,7 +359,7 @@ function ProductDetailContent() {
                     <div className="w-3 h-3 rounded-full bg-green-500" />
                     <span className="text-green-700 font-medium">
                       {product.stock <= product.stockWarning
-                        ? `Ultimas \${product.stock} unidades!`
+                        ? `Ultimas ${product.stock} unidades!`
                         : 'Stock disponible'}
                     </span>
                   </>
