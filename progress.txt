@@ -225,3 +225,39 @@ Started: 2026-01-21
 
 **Commit:** 4e0b97c
 ---
+
+## 2026-01-22 - E2-S04: Listado de productos con filtros
+
+**Qué se implementó:**
+- Página `/productos` con listado paginado y filtros completos
+- Página `/categoria/[slug]` para filtrar por categoría con header específico
+- Sidebar con filtros accordion: Categoría (con jerarquía), Marca, Precio (min-max con presets), Stock, Envío gratis
+- Componente ProductCard reutilizable con badges OFERTA y ENVÍO GRATIS, overlay sin stock
+- Ordenamiento: Más recientes, Precio menor/mayor, A-Z/Z-A
+- Paginación inteligente con navegación (primero, actual ±2, último)
+- URL params sincronizados con filtros seleccionados
+- Chips de filtros activos con botón para eliminar individualmente
+- Empty state cuando no hay resultados con sugerencia de acción
+- Responsive mobile-first con Sheet para filtros en mobile
+- Loading skeleton mientras carga
+
+**Archivos creados:**
+- apps/web/src/components/ui/checkbox.tsx (shadcn/ui)
+- apps/web/src/components/ui/select.tsx (shadcn/ui)
+- apps/web/src/components/ui/accordion.tsx (shadcn/ui)
+- apps/web/src/components/ProductCard.tsx
+- apps/web/src/components/ProductFilters.tsx
+- apps/web/src/app/productos/page.tsx
+- apps/web/src/app/categoria/[slug]/page.tsx
+
+**Archivos modificados:**
+- apps/web/package.json (dependencias @radix-ui/react-checkbox, @radix-ui/react-select, @radix-ui/react-accordion)
+
+**Aprendizajes para futuras iteraciones:**
+- useSearchParams requiere Suspense boundary en Next.js 14 App Router
+- ProductFilters acepta onMobileClose callback para cerrar Sheet después de aplicar filtros
+- Usar URLSearchParams para manipular query params manteniendo los existentes
+- Los componentes de filtro pueden redirigir a /productos o mantener la ruta actual según contexto
+
+**Commit:** e9defaa
+---
