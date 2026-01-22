@@ -1,0 +1,25 @@
+{
+  "name": "katsuda-store",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm run --parallel dev",
+    "dev:web": "pnpm --filter @katsuda/web dev",
+    "dev:api": "pnpm --filter @katsuda/api dev",
+    "build": "pnpm run --parallel build",
+    "build:web": "pnpm --filter @katsuda/web build",
+    "build:api": "pnpm --filter @katsuda/api build",
+    "lint": "pnpm run --parallel lint",
+    "typecheck": "pnpm run --parallel typecheck",
+    "db:migrate": "pnpm --filter @katsuda/api db:migrate",
+    "db:seed": "pnpm --filter @katsuda/api db:seed",
+    "db:studio": "pnpm --filter @katsuda/api db:studio"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
