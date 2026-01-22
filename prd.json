@@ -52,8 +52,8 @@
         "Incluir conexión a BD"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completado 2026-01-21. Commit be89466"
     },
     {
       "id": "E1-S01",
