@@ -825,3 +825,61 @@ Started: 2026-01-21
 
 **Commit:** 7d6e17c
 ---
+
+## 2026-01-22 - E6-S01: SEO meta tags y Open Graph
+
+**Que se implemento:**
+- Layout mejorado con metadata base completa:
+  - metadataBase para URLs absolutas
+  - title con template "%s | Katsuda"
+  - description optimizada con palabras clave
+  - keywords extendidas
+  - Open Graph completo con imagen, locale y siteName
+  - Twitter cards con summary_large_image
+  - robots con directivas de indexacion
+- Pagina de producto con metadata dinamica:
+  - generateMetadata que obtiene datos del producto via fetch
+  - Title y description dinamicos con nombre, marca, precio
+  - Open Graph con imagen del producto
+  - Twitter cards
+  - Canonical URL
+  - Schema.org Product con datos estructurados:
+    - name, description, sku, image, brand
+    - offers con price, availability, seller
+  - Schema.org BreadcrumbList para navegacion
+- Refactorizacion de paginas a Server + Client Components:
+  - productos/[slug]/page.tsx (Server) + ProductDetailClient.tsx (Client)
+  - productos/page.tsx (Server) + ProductsClient.tsx (Client)
+  - categoria/[slug]/page.tsx (Server con generateMetadata) + CategoryClient.tsx (Client)
+  - contacto/page.tsx (Server) + ContactClient.tsx (Client)
+  - buscar/page.tsx (Server) + SearchClient.tsx (Client)
+- Metadata estatica en paginas principales:
+  - /productos: titulo y descripcion para catalogo
+  - /categoria/[slug]: metadata dinamica con nombre de categoria
+  - /contacto: titulo y descripcion con sucursales
+  - /buscar: robots noindex para evitar indexacion de busquedas
+
+**Archivos creados:**
+- apps/web/src/app/productos/[slug]/ProductDetailClient.tsx
+- apps/web/src/app/productos/ProductsClient.tsx
+- apps/web/src/app/categoria/[slug]/CategoryClient.tsx
+- apps/web/src/app/contacto/ContactClient.tsx
+- apps/web/src/app/buscar/SearchClient.tsx
+
+**Archivos modificados:**
+- apps/web/src/app/layout.tsx (metadata base completa)
+- apps/web/src/app/productos/[slug]/page.tsx (refactorizado a Server Component)
+- apps/web/src/app/productos/page.tsx (metadata + wrapper)
+- apps/web/src/app/categoria/[slug]/page.tsx (generateMetadata)
+- apps/web/src/app/contacto/page.tsx (metadata + wrapper)
+- apps/web/src/app/buscar/page.tsx (metadata + wrapper)
+
+**Aprendizajes para futuras iteraciones:**
+- Para SEO dinamico en Next.js 14+, separar Server Component (metadata) y Client Component (UI)
+- generateMetadata usa Promise<{ slug: string }> para params en Next.js 15
+- Schema.org Product requiere priceValidUntil para Google Rich Results
+- metadataBase en layout permite usar URLs relativas en todo el sitio
+- robots: noindex en paginas de busqueda evita contenido duplicado
+
+**Commit:** cf84595
+---
