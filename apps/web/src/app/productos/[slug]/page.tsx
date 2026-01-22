@@ -22,6 +22,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductCard } from '@/components/ProductCard';
 import { useCart } from '@/context/CartContext';
+import { useWhatsApp } from '@/context/WhatsAppContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -104,7 +105,8 @@ function formatPrice(price: number): string {
 function ProductDetailContent() {
   const params = useParams();
   const slug = params.slug as string;
-  const { addToCart, loading: cartLoading } = useCart();
+  const { addToCart } = useCart();
+  const { setProductInfo } = useWhatsApp();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -161,6 +163,17 @@ function ProductDetailContent() {
         setLoading(false);
       });
   }, [slug]);
+
+  // Update WhatsApp context when product is loaded
+  useEffect(() => {
+    if (product) {
+      setProductInfo({ name: product.name, sku: product.sku });
+    }
+    // Clear product info when leaving the page
+    return () => {
+      setProductInfo(null);
+    };
+  }, [product, setProductInfo]);
 
   const handleQuantityChange = (delta: number) => {
     const newQuantity = quantity + delta;
