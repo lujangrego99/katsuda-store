@@ -14,12 +14,14 @@ import {
   Package,
   MapPin,
   Loader2,
+  Check,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductCard } from '@/components/ProductCard';
+import { useCart } from '@/context/CartContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -102,6 +104,7 @@ function formatPrice(price: number): string {
 function ProductDetailContent() {
   const params = useParams();
   const slug = params.slug as string;
+  const { addToCart, loading: cartLoading } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -111,6 +114,8 @@ function ProductDetailContent() {
   const [postalCode, setPostalCode] = useState('');
   const [shippingResult, setShippingResult] = useState<string | null>(null);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -169,8 +174,15 @@ function ProductDetailContent() {
     setCalculatingShipping(false);
   };
 
-  const handleAddToCart = () => {
-    alert(`Agregado al carrito: ${quantity} x ${product?.name}`);
+  const handleAddToCart = async () => {
+    if (!product) return;
+    setAddingToCart(true);
+    const success = await addToCart(product.id, quantity);
+    setAddingToCart(false);
+    if (success) {
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    }
   };
 
   if (loading) {
@@ -397,12 +409,26 @@ function ProductDetailContent() {
 
               <Button
                 onClick={handleAddToCart}
-                disabled={product.stock === 0}
+                disabled={product.stock === 0 || addingToCart}
                 size="lg"
-                className="w-full text-lg py-6"
+                className={`w-full text-lg py-6 ${addedToCart ? 'bg-green-600 hover:bg-green-600' : ''}`}
               >
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                Agregar al carrito
+                {addingToCart ? (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Agregando...
+                  </>
+                ) : addedToCart ? (
+                  <>
+                    <Check className="h-5 w-5 mr-2" />
+                    Agregado al carrito
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Agregar al carrito
+                  </>
+                )}
               </Button>
 
               <Card>

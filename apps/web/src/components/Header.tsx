@@ -8,7 +8,6 @@ import {
   ShoppingCart,
   Phone,
   X,
-  ChevronDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +18,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
+import { useCart } from '@/context/CartContext';
 
 const categories = [
   { name: 'Griferías', href: '/categoria/griferias' },
@@ -33,6 +32,9 @@ const categories = [
 export function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { cart } = useCart();
+
+  const itemCount = cart?.itemCount || 0;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,9 +182,11 @@ export function Header() {
               <Link href="/carrito">
                 <Button variant="ghost" size="icon" className="relative">
                   <ShoppingCart className="h-5 w-5" />
-                  <span className="absolute -top-1 -right-1 bg-accent-orange text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    0
-                  </span>
+                  {itemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-accent-orange text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {itemCount > 99 ? '99+' : itemCount}
+                    </span>
+                  )}
                   <span className="sr-only">Carrito</span>
                 </Button>
               </Link>

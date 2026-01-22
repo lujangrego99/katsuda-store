@@ -9,6 +9,7 @@ Started: 2026-01-21
 - shadcn/ui: Componentes en `@/components/ui/`, configuración en `components.json`
 - Layout global: Header y Footer en layout.tsx, contenido específico en page.tsx
 - API routes organizadas en `apps/api/src/routes/`, integradas en index.ts con `app.use()`
+- Cart API usa header `x-session-id` para identificar carrito anónimo (no query param)
 
 ---
 
@@ -294,4 +295,70 @@ Started: 2026-01-21
 - El botón agregar al carrito es placeholder - se integrará cuando exista CartContext en E3-S02
 
 **Commit:** d35bd3a
+---
+
+## 2026-01-22 - E3-S01: API de carrito
+
+**Qué se implementó:**
+- GET /api/cart - Obtener carrito actual usando header x-session-id
+- POST /api/cart/items - Agregar producto con validación de stock
+- PATCH /api/cart/items/:id - Actualizar cantidad (si quantity=0, elimina el item)
+- DELETE /api/cart/items/:id - Eliminar producto del carrito
+- Carrito anónimo por sessionId para guest checkout
+- Validación de stock en todas las operaciones (agregar, actualizar)
+- Respuesta incluye subtotal normal y subtotal con precio transferencia
+
+**Archivos creados:**
+- apps/api/src/routes/cart.ts
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integración del cartRouter)
+
+**Aprendizajes para futuras iteraciones:**
+- El sessionId se pasa via header `x-session-id` en lugar de query param para mejor seguridad
+- CartItem tiene constraint único cartId_productId, usar findUnique con ese compound key
+- getOrCreateCart pattern para asegurar que siempre existe un carrito
+- Respuesta incluye itemCount, subtotal y transferSubtotal para uso en UI
+
+**Commit:** d005ca3
+---
+
+## 2026-01-22 - E3-S02: Carrito de compras UI
+
+**Qué se implementó:**
+- CartContext con estado global del carrito usando React Context
+- Persistencia de sessionId en localStorage para identificar carritos anónimos
+- Página /carrito con:
+  - Lista de productos con imagen, nombre, marca, SKU, precio y subtotal
+  - Botones +/- para modificar cantidad con validación de stock
+  - Botón eliminar producto
+  - Resumen del pedido: subtotal, envío (pendiente), total
+  - Precio con transferencia (9% OFF) destacado
+  - Botones "Finalizar compra" y "Seguir comprando"
+- Empty state cuando el carrito está vacío con:
+  - Mensaje e icono descriptivo
+  - Botón para ver productos
+  - Grid de productos destacados como sugerencias
+- Mini-carrito en header con contador dinámico (oculto cuando está vacío)
+- Botón agregar al carrito en página de producto con estados:
+  - Normal con icono de carrito
+  - Loading con spinner mientras agrega
+  - Confirmación verde con checkmark por 2 segundos
+
+**Archivos creados:**
+- apps/web/src/context/CartContext.tsx (estado global del carrito)
+- apps/web/src/app/carrito/page.tsx (página del carrito)
+
+**Archivos modificados:**
+- apps/web/src/app/layout.tsx (integración de CartProvider)
+- apps/web/src/components/Header.tsx (contador del carrito dinámico)
+- apps/web/src/app/productos/[slug]/page.tsx (conexión con CartContext)
+
+**Aprendizajes para futuras iteraciones:**
+- CartProvider debe envolver todo el layout para acceso global
+- El sessionId se genera con timestamp + random para evitar colisiones
+- Usar estados de feedback (loading, success) para mejor UX en botones de acción
+- El contador del carrito se oculta cuando itemCount es 0 para mejor estética
+
+**Commit:** 732938b
 ---
