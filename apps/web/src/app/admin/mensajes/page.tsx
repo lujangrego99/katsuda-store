@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -96,7 +96,7 @@ function formatRelativeDate(dateString: string): string {
   return formatDate(dateString);
 }
 
-export default function AdminMessagesPage() {
+function AdminMessagesContent() {
   const { token, loading: authLoading } = useAdminAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -747,5 +747,17 @@ export default function AdminMessagesPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function AdminMessagesPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-katsuda-700" />
+      </div>
+    }>
+      <AdminMessagesContent />
+    </Suspense>
   );
 }

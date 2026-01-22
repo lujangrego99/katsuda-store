@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -168,7 +168,7 @@ function formatDate(dateString: string): string {
   });
 }
 
-export default function AdminOrdersPage() {
+function AdminOrdersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { token, loading: authLoading, isAuthenticated } = useAdminAuth();
@@ -892,5 +892,17 @@ export default function AdminOrdersPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function AdminOrdersPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-katsuda-600" />
+      </div>
+    }>
+      <AdminOrdersContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -94,7 +94,7 @@ function formatPrice(price: number | string): string {
   }).format(typeof price === 'string' ? parseFloat(price) : price);
 }
 
-export default function AdminProductsPage() {
+function AdminProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { token, loading: authLoading, isAuthenticated } = useAdminAuth();
@@ -619,5 +619,17 @@ export default function AdminProductsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function AdminProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-katsuda-600" />
+      </div>
+    }>
+      <AdminProductsContent />
+    </Suspense>
   );
 }

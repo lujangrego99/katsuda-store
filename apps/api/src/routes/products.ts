@@ -226,6 +226,7 @@ router.get('/', async (req: Request, res: Response) => {
       brand: product.brand,
       category: product.category,
       image: product.images[0]?.url || null,
+      updatedAt: product.updatedAt,
     }));
 
     res.json({

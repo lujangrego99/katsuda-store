@@ -32,6 +32,7 @@ router.get('/', async (_req: Request, res: Response) => {
       description: category.description,
       image: category.image,
       productCount: category._count.products,
+      updatedAt: category.updatedAt,
       children: category.children.map(child => {
         const childData = categories.find(c => c.id === child.id);
         return {
@@ -41,6 +42,7 @@ router.get('/', async (_req: Request, res: Response) => {
           description: child.description,
           image: child.image,
           productCount: childData?._count.products || 0,
+          updatedAt: child.updatedAt,
         };
       }),
     }));
