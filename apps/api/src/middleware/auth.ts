@@ -15,6 +15,7 @@ export interface JWTPayload {
 
 // Extender Request para incluir admin
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       admin?: {
