@@ -16,7 +16,9 @@ import adminCategoriesRouter from './routes/admin/categories';
 import adminBrandsRouter from './routes/admin/brands';
 import adminOrdersRouter from './routes/admin/orders';
 import adminShippingRouter from './routes/admin/shipping';
+import adminMessagesRouter from './routes/admin/messages';
 import settingsRouter from './routes/settings';
+import contactRouter from './routes/contact';
 
 const app: Express = express();
 const prisma = new PrismaClient();
@@ -52,7 +54,9 @@ app.use('/api/admin/categories', adminCategoriesRouter);
 app.use('/api/admin/brands', adminBrandsRouter);
 app.use('/api/admin/orders', adminOrdersRouter);
 app.use('/api/admin/shipping', adminShippingRouter);
+app.use('/api/admin/messages', adminMessagesRouter);
 app.use('/api/settings', settingsRouter);
+app.use('/api/contact', contactRouter);
 
 // API info
 app.get('/api', (_req: Request, res: Response) => {
@@ -69,6 +73,7 @@ app.get('/api', (_req: Request, res: Response) => {
       orders: '/api/orders',
       shipping: '/api/shipping',
       settings: '/api/settings',
+      contact: '/api/contact',
       admin: '/api/admin',
     }
   });
