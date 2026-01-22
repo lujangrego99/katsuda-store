@@ -608,3 +608,41 @@ Started: 2026-01-21
 
 **Commit:** c42a634
 ---
+
+## 2026-01-22 - E4-S05: Gestion de pedidos en admin
+
+**Que se implemento:**
+- API CRUD para pedidos admin:
+  - GET /api/admin/orders - Lista paginada con filtros (status, paymentStatus, dateFrom, dateTo, search)
+  - GET /api/admin/orders/:id - Detalle completo del pedido con items, cliente y direccion
+  - PATCH /api/admin/orders/:id - Actualizar estado, paymentStatus y notas
+  - GET /api/admin/orders/stats/summary - Estadisticas de pedidos por estado
+- UI de gestion de pedidos (/admin/pedidos):
+  - Tabla con busqueda por numero de pedido, email o nombre
+  - Filtros por estado del pedido, estado de pago y rango de fechas
+  - Paginacion
+  - Vista de detalle del pedido en modal:
+    - Datos del cliente (nombre, email, telefono)
+    - Direccion de envio o indicacion de retiro en sucursal
+    - Lista de productos con imagen, SKU, cantidad y precios
+    - Resumen de totales (subtotal, envio, descuento, total)
+    - Cambio de estado con transiciones validas (ej: PENDING solo puede ir a CONFIRMED o CANCELLED)
+    - Cambio de estado de pago
+    - Notas internas editables
+
+**Archivos creados:**
+- apps/api/src/routes/admin/orders.ts
+- apps/web/src/app/admin/pedidos/page.tsx
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integracion adminOrdersRouter)
+
+**Aprendizajes para futuras iteraciones:**
+- Las transiciones de estado de pedido deben validarse server-side, no solo en UI
+- El objeto allowedTransitions mapea cada estado a sus posibles siguientes estados
+- Para pedidos guest, los datos del cliente estan en guestName/guestEmail/guestPhone
+- El detalle del pedido incluye items.product con imagen para mostrar en UI
+- Las notas internas son utiles para comunicacion entre staff
+
+**Commit:** ccb1946
+---
