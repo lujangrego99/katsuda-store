@@ -5,8 +5,8 @@ WORKDIR /app
 # Install OpenSSL and other dependencies needed by Prisma
 RUN apk add --no-cache openssl openssl-dev libc6-compat
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm (fixed version for stability)
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 # Copy package files
 COPY package.json ./

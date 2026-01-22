@@ -3,8 +3,8 @@ FROM node:20-alpine AS base
 # Install dependencies for sharp (image optimization)
 RUN apk add --no-cache libc6-compat
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm (fixed version for stability)
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 FROM base AS deps
 WORKDIR /app
