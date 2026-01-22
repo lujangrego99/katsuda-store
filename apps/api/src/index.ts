@@ -2,6 +2,9 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { PrismaClient } from '@prisma/client';
+import categoriesRouter from './routes/categories';
+import brandsRouter from './routes/brands';
+import productsRouter from './routes/products';
 
 const app: Express = express();
 const prisma = new PrismaClient();
@@ -22,15 +25,21 @@ app.get('/health', async (_req: Request, res: Response) => {
   }
 });
 
-// API routes placeholder
+// API routes
+app.use('/api/categories', categoriesRouter);
+app.use('/api/brands', brandsRouter);
+app.use('/api/products', productsRouter);
+
+// API info
 app.get('/api', (_req: Request, res: Response) => {
   res.json({
     message: 'Katsuda Store API',
     version: '1.0.0',
     endpoints: {
       health: '/health',
-      products: '/api/products (coming soon)',
-      categories: '/api/categories (coming soon)',
+      categories: '/api/categories',
+      brands: '/api/brands',
+      products: '/api/products',
       cart: '/api/cart (coming soon)',
     }
   });
