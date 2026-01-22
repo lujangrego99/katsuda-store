@@ -646,3 +646,46 @@ Started: 2026-01-21
 
 **Commit:** ccb1946
 ---
+
+## 2026-01-22 - E5-S01: Buscador de productos
+
+**Qué se implementó:**
+- GET /api/products/search - Endpoint de búsqueda para autocomplete
+  - Busca por nombre, SKU o marca del producto
+  - Limita a máximo 10 resultados (default 5)
+  - Retorna productos con imagen, precio y precio transferencia
+- Header actualizado con autocomplete completo:
+  - Debounce de 300ms para evitar requests excesivos
+  - Hasta 5 sugerencias con imagen, nombre, marca, SKU y precios
+  - Dropdown con resaltado del término buscado
+  - Botón "Ver todos los resultados" para ir a /buscar
+  - Soporte mobile con Sheet expandible
+- Página /buscar con resultados completos:
+  - Input de búsqueda grande y prominente
+  - Grid de productos con paginación
+  - Sidebar con filtros (categoría, marca, precio, stock, envío gratis)
+  - Chips de filtros activos con opción de eliminar
+  - Empty states para sin búsqueda y sin resultados
+- Resaltado de términos de búsqueda:
+  - ProductCard acepta prop searchQuery opcional
+  - Función highlightMatch resalta coincidencias en nombre, marca y SKU
+  - Usar tag <mark> con fondo amarillo para resaltar
+
+**Archivos creados:**
+- apps/web/src/app/buscar/page.tsx (página de búsqueda completa)
+
+**Archivos modificados:**
+- apps/api/src/routes/products.ts (endpoint /search)
+- apps/web/src/components/Header.tsx (autocomplete con debounce)
+- apps/web/src/components/ProductCard.tsx (prop searchQuery y highlight)
+- apps/web/src/components/ProductFilters.tsx (prop basePath para reutilización)
+
+**Aprendizajes para futuras iteraciones:**
+- useEffect con setTimeout + cleanup es un patrón simple para debounce
+- Para autocomplete, usar refs y useEffect para detectar clicks afuera
+- La función highlightMatch debe escapar caracteres regex especiales en el query
+- Reutilizar ProductFilters pasando basePath permite usarlo en múltiples páginas
+- Al limpiar filtros en /buscar, mantener el query param q para preservar la búsqueda
+
+**Commit:** 9ac70f0
+---
