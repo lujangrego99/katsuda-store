@@ -36,3 +36,23 @@ Started: 2026-01-21
 
 **Commit:** d2a40e1
 ---
+
+## 2026-01-21 23:XX - E0-S02: Configurar conexión a PostgreSQL con Prisma
+
+**Qué se implementó:**
+- Schema Prisma con modelo Category placeholder
+- Archivo .env con DATABASE_URL
+- Conexión verificada con prisma db push
+- Health endpoint verifica conexión a BD
+
+**Archivos creados/modificados:**
+- apps/api/src/prisma/schema.prisma (nuevo)
+- apps/api/.env (nuevo - no commiteado)
+- apps/api/src/index.ts (actualizado)
+
+**Aprendizajes:**
+- prisma db push sincroniza schema sin crear migraciones (útil para desarrollo rápido)
+- .env debe estar en apps/api/ no en la raíz
+
+**Commit:** 3b831f4
+---
