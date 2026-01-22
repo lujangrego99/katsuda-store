@@ -5,8 +5,10 @@ Started: 2026-01-21
 - Monorepo con pnpm workspaces: apps/web (Next.js), apps/api (Express), packages/shared (tipos)
 - Colores Katsuda en Tailwind: katsuda-900 (#1B5E20), katsuda-700 (#2E7D32), katsuda-500 (#4CAF50)
 - Express usa tipos explícitos: Express, Request, Response de 'express'
+- Express Router requiere tipo explícito: `const router: RouterType = Router()` para evitar TS2742
 - shadcn/ui: Componentes en `@/components/ui/`, configuración en `components.json`
 - Layout global: Header y Footer en layout.tsx, contenido específico en page.tsx
+- API routes organizadas en `apps/api/src/routes/`, integradas en index.ts con `app.use()`
 
 ---
 
@@ -166,4 +168,31 @@ Started: 2026-01-21
 - El layout de Next.js con flex-col y flex-1 en main asegura que el footer quede abajo
 
 **Commit:** 6435c12
+---
+
+## 2026-01-22 - E2-S02: API de productos y categorías
+
+**Qué se implementó:**
+- Rutas organizadas en `apps/api/src/routes/` (categories, brands, products)
+- GET /api/categories - Lista categorías padre con hijos y conteo de productos
+- GET /api/categories/:slug - Categoría con productos paginados (incluye hijos)
+- GET /api/brands - Lista marcas activas con conteo de productos
+- GET /api/products - Lista paginada con filtros: category, brand, priceMin, priceMax, inStock, freeShipping, search, sortBy (newest, price_asc, price_desc, name_asc, name_desc)
+- GET /api/products/:slug - Detalle completo con imágenes, atributos, categoría con parent, marca y productos relacionados
+- GET /api/products/featured - Productos destacados con límite configurable
+
+**Archivos creados:**
+- apps/api/src/routes/categories.ts
+- apps/api/src/routes/brands.ts
+- apps/api/src/routes/products.ts
+
+**Archivos modificados:**
+- apps/api/src/index.ts (integración de routers)
+
+**Aprendizajes para futuras iteraciones:**
+- Router de Express requiere tipo explícito: `const router: RouterType = Router()` para evitar TS2742
+- Rutas con parámetros dinámicos (/:slug) deben ir DESPUÉS de rutas específicas (/featured)
+- Usar `include: { _count: { select: { products: ... } } }` para conteo eficiente en Prisma
+
+**Commit:** c948bbc
 ---
